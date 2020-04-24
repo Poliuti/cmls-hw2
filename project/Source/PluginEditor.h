@@ -16,11 +16,11 @@
 //==============================================================================
 /**
 */
-class FlangerG9AudioProcessorEditor  : public AudioProcessorEditor
+class DelayLineAudioProcessorEditor  : public AudioProcessorEditor,  private Slider::Listener
 {
 public:
-    FlangerG9AudioProcessorEditor (FlangerG9AudioProcessor&);
-    ~FlangerG9AudioProcessorEditor();
+    DelayLineAudioProcessorEditor (DelayLineAudioProcessor&);
+    ~DelayLineAudioProcessorEditor();
 
     //==============================================================================
     void paint (Graphics&) override;
@@ -29,7 +29,16 @@ public:
 private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
-    FlangerG9AudioProcessor& processor;
-
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FlangerG9AudioProcessorEditor)
+    DelayLineAudioProcessor& processor;
+    
+    Slider wetSlider;
+    Label wetLabel;
+    Slider drySlider;
+    Label dryLabel;
+    Slider timeSlider;
+    Label timeLabel;
+    
+    void sliderValueChanged(Slider* slider) override;
+    
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DelayLineAudioProcessorEditor)
 };

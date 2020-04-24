@@ -12,7 +12,7 @@
 #include "PluginEditor.h"
 
 //==============================================================================
-FlangerG9AudioProcessor::FlangerG9AudioProcessor()
+DelayLineAudioProcessor::DelayLineAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
      : AudioProcessor (BusesProperties()
                      #if ! JucePlugin_IsMidiEffect
@@ -26,17 +26,17 @@ FlangerG9AudioProcessor::FlangerG9AudioProcessor()
 {
 }
 
-FlangerG9AudioProcessor::~FlangerG9AudioProcessor()
+DelayLineAudioProcessor::~DelayLineAudioProcessor()
 {
 }
 
 //==============================================================================
-const String FlangerG9AudioProcessor::getName() const
+const String DelayLineAudioProcessor::getName() const
 {
     return JucePlugin_Name;
 }
 
-bool FlangerG9AudioProcessor::acceptsMidi() const
+bool DelayLineAudioProcessor::acceptsMidi() const
 {
    #if JucePlugin_WantsMidiInput
     return true;
@@ -45,7 +45,7 @@ bool FlangerG9AudioProcessor::acceptsMidi() const
    #endif
 }
 
-bool FlangerG9AudioProcessor::producesMidi() const
+bool DelayLineAudioProcessor::producesMidi() const
 {
    #if JucePlugin_ProducesMidiOutput
     return true;
@@ -54,7 +54,7 @@ bool FlangerG9AudioProcessor::producesMidi() const
    #endif
 }
 
-bool FlangerG9AudioProcessor::isMidiEffect() const
+bool DelayLineAudioProcessor::isMidiEffect() const
 {
    #if JucePlugin_IsMidiEffect
     return true;
@@ -63,50 +63,64 @@ bool FlangerG9AudioProcessor::isMidiEffect() const
    #endif
 }
 
-double FlangerG9AudioProcessor::getTailLengthSeconds() const
+double DelayLineAudioProcessor::getTailLengthSeconds() const
 {
     return 0.0;
 }
 
-int FlangerG9AudioProcessor::getNumPrograms()
+int DelayLineAudioProcessor::getNumPrograms()
 {
     return 1;   // NB: some hosts don't cope very well if you tell them there are 0 programs,
                 // so this should be at least 1, even if you're not really implementing programs.
 }
 
-int FlangerG9AudioProcessor::getCurrentProgram()
+int DelayLineAudioProcessor::getCurrentProgram()
 {
     return 0;
 }
 
-void FlangerG9AudioProcessor::setCurrentProgram (int index)
+void DelayLineAudioProcessor::setCurrentProgram (int index)
 {
 }
 
-const String FlangerG9AudioProcessor::getProgramName (int index)
+const String DelayLineAudioProcessor::getProgramName (int index)
 {
     return {};
 }
 
-void FlangerG9AudioProcessor::changeProgramName (int index, const String& newName)
+void DelayLineAudioProcessor::changeProgramName (int index, const String& newName)
 {
 }
 
 //==============================================================================
-void FlangerG9AudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
+void DelayLineAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
+    
+    //********************************************************************************************//
+    // 2) Initialize the variables that we are going to need in processBlock function: 
+    // the buffer, the write and read pointer, the delay value
+    
+    dbuf.setSize(getTotalNumOutputChannels(), 100000);
+    dbuf.clear(); 
+    
+
+    dw = 0;
+    dr = 1;
+    ds = 50000;
+    //********************************************************************************************//
+
 }
 
-void FlangerG9AudioProcessor::releaseResources()
+void DelayLineAudioProcessor::releaseResources()
 {
     // When playback stops, you can use this as an opportunity to free up any
     // spare memory, etc.
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
-bool FlangerG9AudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
+bool DelayLineAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
   #if JucePlugin_IsMidiEffect
     ignoreUnused (layouts);
@@ -129,9 +143,12 @@ bool FlangerG9AudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts
 }
 #endif
 
-void FlangerG9AudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
+
+void DelayLineAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
     ScopedNoDenormals noDenormals;
+    
+    
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
 
@@ -143,41 +160,71 @@ void FlangerG9AudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuff
     // this code if your algorithm always overwrites all the output channels.
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
+    
+
 
     // This is the place where you'd normally do the guts of your plugin's
     // audio processing...
-    // Make sure to reset the state if your inner loop is processing
-    // the samples and the outer loop is handling the channels.
-    // Alternatively, you can process the samples with the channels
-    // interleaved by keeping the same state.
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    {
-        auto* channelData = buffer.getWritePointer (channel);
+    
+    //********************************************************************************************//
+    // 3) Delay line implementation
+    int numSamples = buffer.getNumSamples();
+    
+    float wet_now = wet;
+    float dry_now = dry;
+    float fb_now = fb;
+    fb_now = 0.7; // è un valore di default pre gui. Non impostare valori maggiori o uguali a 1 !
+    int ds_now = ds;
+    
+    float* channelOutDataL = buffer.getWritePointer(0);
+    float* channelOutDataR = buffer.getWritePointer(1);
+    float* delay = dbuf.getWritePointer(0);
+    
+    const float* channelInData = buffer.getReadPointer(0);
+    
+    for (int i = 0; i < numSamples; ++i) {
+        // setSample(int destChannel, int destSample, Type newValue)	
 
-        // ..do something to the data...
+        
+        delay[dr]=dbuf.getSample(0, dr);
+        
+        if (++dr >= ds_now) dr = 0;
+        if (++dw >= ds_now) dw = 0;
+
+        channelOutDataL[i] = dry_now * channelInData[i] + wet_now  * (fb_now * delay[dr]);
+        dbuf.setSample(0, dw, channelOutDataL[i]);
+
+        channelOutDataR[i] = dry_now * channelInData[i] + wet_now  * (fb_now * delay[dr]);
+        dbuf.setSample(1, dw, channelOutDataR[i]);
+                
+        dw = (dw + 1 ) % ds_now ;
+        dr = (dr + 1 ) % ds_now ;
     }
+    //********************************************************************************************//
+
+    
 }
 
 //==============================================================================
-bool FlangerG9AudioProcessor::hasEditor() const
+bool DelayLineAudioProcessor::hasEditor() const
 {
     return true; // (change this to false if you choose to not supply an editor)
 }
 
-AudioProcessorEditor* FlangerG9AudioProcessor::createEditor()
+AudioProcessorEditor* DelayLineAudioProcessor::createEditor()
 {
-    return new FlangerG9AudioProcessorEditor (*this);
+    return new DelayLineAudioProcessorEditor (*this);
 }
 
 //==============================================================================
-void FlangerG9AudioProcessor::getStateInformation (MemoryBlock& destData)
+void DelayLineAudioProcessor::getStateInformation (MemoryBlock& destData)
 {
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
 }
 
-void FlangerG9AudioProcessor::setStateInformation (const void* data, int sizeInBytes)
+void DelayLineAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
@@ -185,7 +232,20 @@ void FlangerG9AudioProcessor::setStateInformation (const void* data, int sizeInB
 
 //==============================================================================
 // This creates new instances of the plugin..
+void DelayLineAudioProcessor::set_wet(float val)
+{
+    wet = val;
+}
+void DelayLineAudioProcessor::set_dry(float val)
+{
+    dry = val;
+}
+void DelayLineAudioProcessor::set_ds(int val)
+{
+    ds = val;
+}
+
 AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
-    return new FlangerG9AudioProcessor();
+    return new DelayLineAudioProcessor();
 }

@@ -15,12 +15,12 @@
 //==============================================================================
 /**
 */
-class FlangerG9AudioProcessor  : public AudioProcessor
+class DelayLineAudioProcessor  : public AudioProcessor
 {
 public:
     //==============================================================================
-    FlangerG9AudioProcessor();
-    ~FlangerG9AudioProcessor();
+    DelayLineAudioProcessor();
+    ~DelayLineAudioProcessor();
 
     //==============================================================================
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
@@ -54,8 +54,27 @@ public:
     //==============================================================================
     void getStateInformation (MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
-
+    
+    void set_wet(float val);
+    void set_dry(float val);
+    void set_ds(int val);
+    
 private:
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FlangerG9AudioProcessor)
+    
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DelayLineAudioProcessor)
+    
+    //********************************************************************************************//
+    // 1) Declare the extra buffer and other variables as private members of the Processor class
+    AudioSampleBuffer dbuf;
+    int dw ;
+    int dr;
+    
+    float wet;
+    float dry;
+    float fb;
+    int ds;
+    //********************************************************************************************//
+
+    
 };
