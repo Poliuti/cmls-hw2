@@ -103,8 +103,9 @@ void DelayLineAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBl
     // the buffer, the write and read pointer, the delay value
     
     dbuf.setSize(getTotalNumOutputChannels(), 100000);
+
     dbuf.clear(); 
-    
+
 
     dw = 0;
     dr = 1;
@@ -185,20 +186,22 @@ void DelayLineAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuff
     for (int i = 0; i < numSamples; ++i) {
         // setSample(int destChannel, int destSample, Type newValue)	
 
+        const float in = channelInData[i];
+        float out = 0.0;
         
-        delay[dr]=dbuf.getSample(0, dr);
+        out = dry_now * in + wet_now * delay[dr];
+        
+        delay[dw] = in + (delay[dr] * fb_now);
         
         if (++dr >= ds_now) dr = 0;
         if (++dw >= ds_now) dw = 0;
-
-        channelOutDataL[i] = dry_now * channelInData[i] + wet_now  * (fb_now * delay[dr]);
-        dbuf.setSample(0, dw, channelOutDataL[i]);
-
-        channelOutDataR[i] = dry_now * channelInData[i] + wet_now  * (fb_now * delay[dr]);
-        dbuf.setSample(1, dw, channelOutDataR[i]);
-                
+        
+        channelOutDataL[i] = out;
+        channelOutDataR[i] = channelOutDataL[i];
+                        
         dw = (dw + 1 ) % ds_now ;
         dr = (dr + 1 ) % ds_now ;
+        
     }
     //********************************************************************************************//
 

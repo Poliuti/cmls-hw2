@@ -66,7 +66,7 @@ private:
     
     //********************************************************************************************//
     // 1) Declare the extra buffer and other variables as private members of the Processor class
-    AudioSampleBuffer dbuf;
+    AudioSampleBuffer dbuf, fb_buf;
     int dw ;
     int dr;
     
