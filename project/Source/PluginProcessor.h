@@ -1,13 +1,3 @@
-/*
-  ==============================================================================
-
-    This file was auto-generated!
-
-    It contains the basic framework code for a JUCE plugin processor.
-
-  ==============================================================================
-*/
-
 #pragma once
 
 #include <JuceHeader.h>
@@ -54,27 +44,27 @@ public:
     //==============================================================================
     void getStateInformation (MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
-    
+
     void set_wet(float val);
     void set_dry(float val);
     void set_ds(int val);
-    
+
 private:
     //==============================================================================
-    
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DelayLineAudioProcessor)
-    
+
     //********************************************************************************************//
     // 1) Declare the extra buffer and other variables as private members of the Processor class
     AudioSampleBuffer dbuf, fb_buf;
     int dw ;
     int dr;
-    
+
     float wet;
     float dry;
     float fb;
     int ds;
     //********************************************************************************************//
 
-    
+
 };

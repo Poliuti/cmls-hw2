@@ -1,13 +1,3 @@
-/*
-  ==============================================================================
-
-    This file was auto-generated!
-
-    It contains the basic framework code for a JUCE plugin processor.
-
-  ==============================================================================
-*/
-
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
@@ -97,14 +87,14 @@ void DelayLineAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBl
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
-    
+
     //********************************************************************************************//
-    // 2) Initialize the variables that we are going to need in processBlock function: 
+    // 2) Initialize the variables that we are going to need in processBlock function:
     // the buffer, the write and read pointer, the delay value
-    
+
     dbuf.setSize(getTotalNumOutputChannels(), 100000);
 
-    dbuf.clear(); 
+    dbuf.clear();
 
 
     dw = 0;
@@ -148,8 +138,8 @@ bool DelayLineAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts
 void DelayLineAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
     ScopedNoDenormals noDenormals;
-    
-    
+
+
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
 
@@ -161,51 +151,51 @@ void DelayLineAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuff
     // this code if your algorithm always overwrites all the output channels.
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
-    
+
 
 
     // This is the place where you'd normally do the guts of your plugin's
     // audio processing...
-    
+
     //********************************************************************************************//
     // 3) Delay line implementation
     int numSamples = buffer.getNumSamples();
-    
+
     float wet_now = wet;
     float dry_now = dry;
     float fb_now = fb;
     fb_now = 0.7; // è un valore di default pre gui. Non impostare valori maggiori o uguali a 1 !
     int ds_now = ds;
-    
+
     float* channelOutDataL = buffer.getWritePointer(0);
     float* channelOutDataR = buffer.getWritePointer(1);
     float* delay = dbuf.getWritePointer(0);
-    
+
     const float* channelInData = buffer.getReadPointer(0);
-    
+
     for (int i = 0; i < numSamples; ++i) {
-        // setSample(int destChannel, int destSample, Type newValue)	
+        // setSample(int destChannel, int destSample, Type newValue)
 
         const float in = channelInData[i];
         float out = 0.0;
-        
+
         out = dry_now * in + wet_now * delay[dr];
-        
+
         delay[dw] = in + (delay[dr] * fb_now);
-        
+
         if (++dr >= ds_now) dr = 0;
         if (++dw >= ds_now) dw = 0;
-        
+
         channelOutDataL[i] = out;
         channelOutDataR[i] = channelOutDataL[i];
-                        
+
         dw = (dw + 1 ) % ds_now ;
         dr = (dr + 1 ) % ds_now ;
-        
+
     }
     //********************************************************************************************//
 
-    
+
 }
 
 //==============================================================================
