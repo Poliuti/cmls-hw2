@@ -91,7 +91,6 @@ void DelayLineAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlo
     dbuf.setSize(getTotalNumOutputChannels(), 100000);
     dbuf.clear();
     dw = 0;
-    dr = 1;
     ds = 50000;
 }
 //==============================================================================
@@ -142,15 +141,12 @@ void DelayLineAudioProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffe
     // when they first compile a plugin, but obviously you don't need to keep
     // this code if your algorithm always overwrites all the output channels.
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-        buffer.clear (i, 0, buffer.getNumSamples());
-
+        buffer.clear(i, 0, buffer.getNumSamples());
 
 
     // This is the place where you'd normally do the guts of your plugin's
     // audio processing...
 
-    //********************************************************************************************//
-    // 3) Delay line implementation
     int numSamples = buffer.getNumSamples();
 
     float wet_now = wet;
@@ -164,28 +160,22 @@ void DelayLineAudioProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffe
     float* delay = dbuf.getWritePointer(0);
 
     const float* channelInData = buffer.getReadPointer(0);
+    //              ↓ [4, 5, 6, 7]
+    // [0, 1, 2, 3, 4, 5, 6, 7]
 
     for (int i = 0; i < numSamples; ++i) {
-        // setSample(int destChannel, int destSample, Type newValue)
-
+        int dr = (dw + 1) % ds_now; // read one sample ahead
         const float in = channelInData[i];
-        float out = 0.0;
+        float out;
 
         out = dry_now * in + wet_now * delay[dr];
-
         delay[dw] = in + (delay[dr] * fb_now);
 
-        if (++dr >= ds_now) dr = 0;
-        if (++dw >= ds_now) dw = 0;
-
         channelOutDataL[i] = out;
-        channelOutDataR[i] = channelOutDataL[i];
+        channelOutDataR[i] = out;
 
-        dw = (dw + 1 ) % ds_now ;
-        dr = (dr + 1 ) % ds_now ;
-
+        dw = dr; // move writing head one sample ahead
     }
-    //********************************************************************************************//
 }
 //==============================================================================
 

@@ -59,8 +59,7 @@ private:
     //********************************************************************************************//
     // LA ROBA NOSTRA
     AudioSampleBuffer dbuf, fb_buf;
-    int dw ;
-    int dr;
+    int dw;
 
     float wet;
     float dry;
