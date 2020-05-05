@@ -3,7 +3,7 @@
 
 // === OUR CODE ================================================================
 
-void DelayLineAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
+void FlangerProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
@@ -14,13 +14,13 @@ void DelayLineAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlo
     ds = 50000;
 }
 
-void DelayLineAudioProcessor::releaseResources()
+void FlangerProcessor::releaseResources()
 {
     // When playback stops, you can use this as an opportunity to free up any
     // spare memory, etc.
 }
 
-void DelayLineAudioProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
+void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
     ScopedNoDenormals noDenormals;
 
@@ -70,15 +70,15 @@ void DelayLineAudioProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffe
     }
 }
 
-void DelayLineAudioProcessor::set_wet(float val)
+void FlangerProcessor::set_wet(float val)
 {
     wet = val;
 }
-void DelayLineAudioProcessor::set_dry(float val)
+void FlangerProcessor::set_dry(float val)
 {
     dry = val;
 }
-void DelayLineAudioProcessor::set_ds(int val)
+void FlangerProcessor::set_ds(int val)
 {
     ds = val;
 }
@@ -95,7 +95,7 @@ void DelayLineAudioProcessor::set_ds(int val)
 // === JUCE GENERATED CODE =====================================================
 
 //==============================================================================
-DelayLineAudioProcessor::DelayLineAudioProcessor()
+FlangerProcessor::FlangerProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
      : AudioProcessor (BusesProperties()
                      #if ! JucePlugin_IsMidiEffect
@@ -109,17 +109,17 @@ DelayLineAudioProcessor::DelayLineAudioProcessor()
 {
 }
 
-DelayLineAudioProcessor::~DelayLineAudioProcessor()
+FlangerProcessor::~FlangerProcessor()
 {
 }
 
 //==============================================================================
-const String DelayLineAudioProcessor::getName() const
+const String FlangerProcessor::getName() const
 {
     return JucePlugin_Name;
 }
 
-bool DelayLineAudioProcessor::acceptsMidi() const
+bool FlangerProcessor::acceptsMidi() const
 {
    #if JucePlugin_WantsMidiInput
     return true;
@@ -128,7 +128,7 @@ bool DelayLineAudioProcessor::acceptsMidi() const
    #endif
 }
 
-bool DelayLineAudioProcessor::producesMidi() const
+bool FlangerProcessor::producesMidi() const
 {
    #if JucePlugin_ProducesMidiOutput
     return true;
@@ -137,7 +137,7 @@ bool DelayLineAudioProcessor::producesMidi() const
    #endif
 }
 
-bool DelayLineAudioProcessor::isMidiEffect() const
+bool FlangerProcessor::isMidiEffect() const
 {
    #if JucePlugin_IsMidiEffect
     return true;
@@ -146,37 +146,37 @@ bool DelayLineAudioProcessor::isMidiEffect() const
    #endif
 }
 
-double DelayLineAudioProcessor::getTailLengthSeconds() const
+double FlangerProcessor::getTailLengthSeconds() const
 {
     return 0.0;
 }
 
-int DelayLineAudioProcessor::getNumPrograms()
+int FlangerProcessor::getNumPrograms()
 {
     return 1;   // NB: some hosts don't cope very well if you tell them there are 0 programs,
                 // so this should be at least 1, even if you're not really implementing programs.
 }
 
-int DelayLineAudioProcessor::getCurrentProgram()
+int FlangerProcessor::getCurrentProgram()
 {
     return 0;
 }
 
-void DelayLineAudioProcessor::setCurrentProgram(int index)
+void FlangerProcessor::setCurrentProgram(int index)
 {
 }
 
-const String DelayLineAudioProcessor::getProgramName(int index)
+const String FlangerProcessor::getProgramName(int index)
 {
     return {};
 }
 
-void DelayLineAudioProcessor::changeProgramName(int index, const String& newName)
+void FlangerProcessor::changeProgramName(int index, const String& newName)
 {
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
-bool DelayLineAudioProcessor::isBusesLayoutSupported(const BusesLayout& layouts) const
+bool FlangerProcessor::isBusesLayoutSupported(const BusesLayout& layouts) const
 {
   #if JucePlugin_IsMidiEffect
     ignoreUnused (layouts);
@@ -201,24 +201,24 @@ bool DelayLineAudioProcessor::isBusesLayoutSupported(const BusesLayout& layouts)
 
 //==============================================================================
 
-bool DelayLineAudioProcessor::hasEditor() const
+bool FlangerProcessor::hasEditor() const
 {
     return true; // (change this to false if you choose to not supply an editor)
 }
 
-AudioProcessorEditor* DelayLineAudioProcessor::createEditor()
+AudioProcessorEditor* FlangerProcessor::createEditor()
 {
-    return new DelayLineAudioProcessorEditor(*this);
+    return new FlangerEditor(*this);
 }
 
-void DelayLineAudioProcessor::getStateInformation (MemoryBlock& destData)
+void FlangerProcessor::getStateInformation (MemoryBlock& destData)
 {
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
 }
 
-void DelayLineAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
+void FlangerProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
@@ -226,5 +226,5 @@ void DelayLineAudioProcessor::setStateInformation (const void* data, int sizeInB
 
 AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
-    return new DelayLineAudioProcessor();
+    return new FlangerProcessor();
 }

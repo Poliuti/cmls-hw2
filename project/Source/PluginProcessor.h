@@ -5,12 +5,12 @@
 //==============================================================================
 /**
 */
-class DelayLineAudioProcessor  : public AudioProcessor
+class FlangerProcessor  : public AudioProcessor
 {
 public:
     // === RELEVANT METHODS ====================================================
-    DelayLineAudioProcessor();
-    ~DelayLineAudioProcessor();
+    FlangerProcessor();
+    ~FlangerProcessor();
 
     void prepareToPlay(double sampleRate, int samplesPerBlock) override; // per inizializzare il processor
     void releaseResources() override;
@@ -43,7 +43,7 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
 private:
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DelayLineAudioProcessor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FlangerProcessor)
 
     // === OUR PRIVATE MEMBERS =================================================
     AudioSampleBuffer dbuf; // delay buffer

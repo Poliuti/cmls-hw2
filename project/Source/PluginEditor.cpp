@@ -2,7 +2,7 @@
 #include "PluginEditor.h"
 
 //==============================================================================
-DelayLineAudioProcessorEditor::DelayLineAudioProcessorEditor (DelayLineAudioProcessor& p)
+FlangerEditor::FlangerEditor (FlangerProcessor& p)
     : AudioProcessorEditor (&p), processor (p)
 {
     // Make sure that before the constructor has finished, you've set the
@@ -35,12 +35,12 @@ DelayLineAudioProcessorEditor::DelayLineAudioProcessorEditor (DelayLineAudioProc
     setSize (400, 300);
 }
 
-DelayLineAudioProcessorEditor::~DelayLineAudioProcessorEditor()
+FlangerEditor::~FlangerEditor()
 {
 }
 
 //==============================================================================
-void DelayLineAudioProcessorEditor::paint (Graphics& g)
+void FlangerEditor::paint (Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
     g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId));
@@ -50,7 +50,7 @@ void DelayLineAudioProcessorEditor::paint (Graphics& g)
     g.drawFittedText ("Hello World!", getLocalBounds(), Justification::centred, 1);
 }
 
-void DelayLineAudioProcessorEditor::resized()
+void FlangerEditor::resized()
 {
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
@@ -65,7 +65,7 @@ void DelayLineAudioProcessorEditor::resized()
     timeSlider.setBounds (100, 90, getWidth() - 110, 20);
 }
 
-void DelayLineAudioProcessorEditor::sliderValueChanged(Slider *slider)
+void FlangerEditor::sliderValueChanged(Slider *slider)
 {
     if (slider == &wetSlider)
         processor.set_wet(wetSlider.getValue());

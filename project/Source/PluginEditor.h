@@ -3,17 +3,17 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 
-class DelayLineAudioProcessorEditor : public AudioProcessorEditor,  private Slider::Listener
+class FlangerEditor : public AudioProcessorEditor,  private Slider::Listener
 {
 public:
-    DelayLineAudioProcessorEditor (DelayLineAudioProcessor&);
-    ~DelayLineAudioProcessorEditor();
+    FlangerEditor(FlangerProcessor&);
+    ~FlangerEditor();
 
     void paint(Graphics&) override;
     void resized() override;
 
 private:
-    DelayLineAudioProcessor& processor;
+    FlangerProcessor& processor;
 
     Slider wetSlider;
     Label wetLabel;
@@ -25,5 +25,5 @@ private:
     void sliderValueChanged(Slider* slider) override;
 
     // === JUCE GENERATED CODE =================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DelayLineAudioProcessorEditor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FlangerEditor)
 };
