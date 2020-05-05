@@ -13,14 +13,14 @@ public:
     ~DelayLineAudioProcessor();
 
     //==============================================================================
-    void prepareToPlay (double sampleRate, int samplesPerBlock) override;
+    void prepareToPlay(double sampleRate, int samplesPerBlock) override; // per inizializzare il processor
     void releaseResources() override;
 
    #ifndef JucePlugin_PreferredChannelConfigurations
     bool isBusesLayoutSupported (const BusesLayout& layouts) const override;
    #endif
 
-    void processBlock (AudioBuffer<float>&, MidiBuffer&) override;
+    void processBlock(AudioBuffer<float>&, MidiBuffer&) override; // AudioBuffer contiene sia input che output, processa l'audio
 
     //==============================================================================
     AudioProcessorEditor* createEditor() override;
@@ -45,6 +45,8 @@ public:
     void getStateInformation (MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
+
+    // LA ROBA NOSTRA //
     void set_wet(float val);
     void set_dry(float val);
     void set_ds(int val);
@@ -55,7 +57,7 @@ private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DelayLineAudioProcessor)
 
     //********************************************************************************************//
-    // 1) Declare the extra buffer and other variables as private members of the Processor class
+    // LA ROBA NOSTRA
     AudioSampleBuffer dbuf, fb_buf;
     int dw ;
     int dr;

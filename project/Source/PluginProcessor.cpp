@@ -69,40 +69,32 @@ int DelayLineAudioProcessor::getCurrentProgram()
     return 0;
 }
 
-void DelayLineAudioProcessor::setCurrentProgram (int index)
+void DelayLineAudioProcessor::setCurrentProgram(int index)
 {
 }
 
-const String DelayLineAudioProcessor::getProgramName (int index)
+const String DelayLineAudioProcessor::getProgramName(int index)
 {
     return {};
 }
 
-void DelayLineAudioProcessor::changeProgramName (int index, const String& newName)
+void DelayLineAudioProcessor::changeProgramName(int index, const String& newName)
 {
 }
 
 //==============================================================================
-void DelayLineAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
+void DelayLineAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
 
-    //********************************************************************************************//
-    // 2) Initialize the variables that we are going to need in processBlock function:
-    // the buffer, the write and read pointer, the delay value
-
     dbuf.setSize(getTotalNumOutputChannels(), 100000);
-
     dbuf.clear();
-
-
     dw = 0;
     dr = 1;
     ds = 50000;
-    //********************************************************************************************//
-
 }
+//==============================================================================
 
 void DelayLineAudioProcessor::releaseResources()
 {
@@ -111,7 +103,7 @@ void DelayLineAudioProcessor::releaseResources()
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
-bool DelayLineAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
+bool DelayLineAudioProcessor::isBusesLayoutSupported(const BusesLayout& layouts) const
 {
   #if JucePlugin_IsMidiEffect
     ignoreUnused (layouts);
@@ -134,8 +126,8 @@ bool DelayLineAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts
 }
 #endif
 
-
-void DelayLineAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
+//==============================================================================
+void DelayLineAudioProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
     ScopedNoDenormals noDenormals;
 
@@ -194,11 +186,9 @@ void DelayLineAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuff
 
     }
     //********************************************************************************************//
-
-
 }
-
 //==============================================================================
+
 bool DelayLineAudioProcessor::hasEditor() const
 {
     return true; // (change this to false if you choose to not supply an editor)
@@ -209,7 +199,6 @@ AudioProcessorEditor* DelayLineAudioProcessor::createEditor()
     return new DelayLineAudioProcessorEditor (*this);
 }
 
-//==============================================================================
 void DelayLineAudioProcessor::getStateInformation (MemoryBlock& destData)
 {
     // You should use this method to store your parameters in the memory block.
@@ -223,8 +212,14 @@ void DelayLineAudioProcessor::setStateInformation (const void* data, int sizeInB
     // whose contents will have been created by the getStateInformation() call.
 }
 
+AudioProcessor* JUCE_CALLTYPE createPluginFilter()
+{
+    return new DelayLineAudioProcessor();
+}
+
 //==============================================================================
-// This creates new instances of the plugin..
+// EXTRA
+
 void DelayLineAudioProcessor::set_wet(float val)
 {
     wet = val;
@@ -236,9 +231,4 @@ void DelayLineAudioProcessor::set_dry(float val)
 void DelayLineAudioProcessor::set_ds(int val)
 {
     ds = val;
-}
-
-AudioProcessor* JUCE_CALLTYPE createPluginFilter()
-{
-    return new DelayLineAudioProcessor();
 }

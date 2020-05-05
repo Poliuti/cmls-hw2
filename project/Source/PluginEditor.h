@@ -6,14 +6,14 @@
 //==============================================================================
 /**
 */
-class DelayLineAudioProcessorEditor  : public AudioProcessorEditor,  private Slider::Listener
+class DelayLineAudioProcessorEditor : public AudioProcessorEditor,  private Slider::Listener
 {
 public:
     DelayLineAudioProcessorEditor (DelayLineAudioProcessor&);
     ~DelayLineAudioProcessorEditor();
 
     //==============================================================================
-    void paint (Graphics&) override;
+    void paint(Graphics&) override;
     void resized() override;
 
 private:
