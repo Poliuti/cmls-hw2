@@ -45,7 +45,6 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
     float wet_now = wet;
     float dry_now = dry;
     float fb_now = fb;
-    fb_now = 0.7; // è un valore di default pre gui. Non impostare valori maggiori o uguali a 1 !
     int ds_now = ds;
 
     float* channelOutDataL = buffer.getWritePointer(0);
@@ -83,6 +82,10 @@ void FlangerProcessor::set_ds(int val)
     ds = val;
 }
 
+void FlangerProcessor::set_fb(float val)
+{
+    fb = val;
+}
 
 
 

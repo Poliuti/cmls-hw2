@@ -8,31 +8,39 @@ FlangerEditor::FlangerEditor (FlangerProcessor& p)
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
 
-    wetSlider.setRange (0.0, 1.0);
-    wetSlider.setTextBoxStyle (Slider::TextBoxRight, false, 100, 20);
+    wetSlider.setRange(0.0, 1.0);
+    wetSlider.setTextBoxStyle(Slider::TextBoxRight, false, 100, 20);
     wetSlider.addListener(this);
-    wetLabel.setText ("Wet Level", dontSendNotification);
+    wetLabel.setText("Wet Level", dontSendNotification);
 
-    addAndMakeVisible (wetSlider);
-    addAndMakeVisible (wetLabel);
+    addAndMakeVisible(wetSlider);
+    addAndMakeVisible(wetLabel);
 
-    drySlider.setRange (0.0, 1.0);
-    drySlider.setTextBoxStyle (Slider::TextBoxRight, false, 100, 20);
+    drySlider.setRange(0.0, 1.0);
+    drySlider.setTextBoxStyle(Slider::TextBoxRight, false, 100, 20);
     drySlider.addListener(this);
-    dryLabel.setText ("Dry Level", dontSendNotification);
+    dryLabel.setText("Dry Level", dontSendNotification);
 
-    addAndMakeVisible (drySlider);
-    addAndMakeVisible (dryLabel);
+    addAndMakeVisible(drySlider);
+    addAndMakeVisible(dryLabel);
 
-    timeSlider.setRange (500, 50000, 100);
-    timeSlider.setTextBoxStyle (Slider::TextBoxRight, false, 100, 20);
+    timeSlider.setRange(500, 50000, 100);
+    timeSlider.setTextBoxStyle(Slider::TextBoxRight, false, 100, 20);
     timeSlider.addListener(this);
-    timeLabel.setText ("Time", dontSendNotification);
+    timeLabel.setText("Time", dontSendNotification);
 
-    addAndMakeVisible (timeSlider);
-    addAndMakeVisible (timeLabel);
+    addAndMakeVisible(timeSlider);
+    addAndMakeVisible(timeLabel);
 
-    setSize (400, 300);
+    fbackSlider.setRange(0.0, 1.0);
+    fbackSlider.setTextBoxStyle(Slider::TextBoxRight, false, 100, 20);
+    fbackSlider.addListener(this);
+    fbackLabel.setText("Feedback", dontSendNotification);
+
+    addAndMakeVisible(fbackSlider);
+    addAndMakeVisible(fbackLabel);
+
+    setSize(400, 300);
 }
 
 FlangerEditor::~FlangerEditor()
@@ -63,6 +71,9 @@ void FlangerEditor::resized()
 
     timeLabel.setBounds (10, 90, 90, 20);
     timeSlider.setBounds (100, 90, getWidth() - 110, 20);
+
+    fbackLabel.setBounds(10, 130, 90, 20);
+    fbackSlider.setBounds(100, 130, getWidth() - 110, 20);
 }
 
 void FlangerEditor::sliderValueChanged(Slider *slider)
@@ -73,5 +84,7 @@ void FlangerEditor::sliderValueChanged(Slider *slider)
         processor.set_dry(drySlider.getValue());
     else if (slider == &timeSlider)
         processor.set_ds(timeSlider.getValue());
+    else if (slider == &fbackSlider)
+        processor.set_fb(fbackSlider.getValue());
 }
 

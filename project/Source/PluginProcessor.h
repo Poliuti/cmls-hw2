@@ -21,6 +21,7 @@ public:
     void set_wet(float val);
     void set_dry(float val);
     void set_ds(int val);
+    void set_fb(float val);
 
 
     /// === JUCE GENERATED CODE ================================================

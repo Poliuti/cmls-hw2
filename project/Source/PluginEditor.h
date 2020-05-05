@@ -21,6 +21,8 @@ private:
     Label dryLabel;
     Slider timeSlider;
     Label timeLabel;
+    Slider fbackSlider;
+    Label fbackLabel;
 
     void sliderValueChanged(Slider* slider) override;
 
