@@ -47,7 +47,7 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
     float freqOsc_now = freqOsc;
     float sweepWidth_now = sweepWidth;
     float fb_now = fb;
-    int depth_now = depth;
+    float depth_now = depth;
 
     float* channelOutDataL = buffer.getWritePointer(0);
     float* channelOutDataR = buffer.getWritePointer(1);
