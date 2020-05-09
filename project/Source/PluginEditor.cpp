@@ -16,7 +16,7 @@ FlangerEditor::FlangerEditor (FlangerProcessor& p)
     addAndMakeVisible(freqOscSlider);
     addAndMakeVisible(freqOscLabel);
 
-    sweepWidthSlider.setRange(0.0, 0.1);
+    sweepWidthSlider.setRange(0.0, 25e-3);
     sweepWidthSlider.setTextBoxStyle(Slider::TextBoxRight, false, 100, 20);
     sweepWidthSlider.addListener(this);
     sweepWidthLabel.setText("Sweep Width", dontSendNotification);

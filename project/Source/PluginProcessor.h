@@ -26,7 +26,7 @@ public:
 
     /// === JUCE GENERATED CODE ================================================
    #ifndef JucePlugin_PreferredChannelConfigurations
-    bool isBusesLayoutSupported (const BusesLayout& layouts) const override;
+    bool isBusesLayoutSupported(const BusesLayout& layouts) const override;
    #endif
     AudioProcessorEditor* createEditor() override;
     bool hasEditor() const override;
@@ -39,9 +39,9 @@ public:
     int getCurrentProgram() override;
     void setCurrentProgram (int index) override;
     const String getProgramName (int index) override;
-    void changeProgramName (int index, const String& newName) override;
-    void getStateInformation (MemoryBlock& destData) override;
-    void setStateInformation (const void* data, int sizeInBytes) override;
+    void changeProgramName(int index, const String& newName) override;
+    void getStateInformation(MemoryBlock& destData) override;
+    void setStateInformation(const void* data, int sizeInBytes) override;
 
 private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FlangerProcessor)
@@ -55,5 +55,5 @@ private:
     float sweepWidth; // Width LFO in samples (campioni di ritardo)
     float depth; // Depth Flanger (0 - 1)
     float fb; // feedback
-    
+
 };
