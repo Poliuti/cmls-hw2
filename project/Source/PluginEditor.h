@@ -15,12 +15,12 @@ public:
 private:
     FlangerProcessor& processor;
 
-    Slider wetSlider;
-    Label wetLabel;
-    Slider drySlider;
-    Label dryLabel;
-    Slider timeSlider;
-    Label timeLabel;
+    Slider freqOscSlider;
+    Label freqOscLabel;
+    Slider sweepWidthSlider;
+    Label sweepWidthLabel;
+    Slider depthSlider;
+    Label depthLabel;
     Slider fbackSlider;
     Label fbackLabel;
 

@@ -18,9 +18,9 @@ public:
     void processBlock(AudioBuffer<float>&, MidiBuffer&) override; // AudioBuffer contiene sia input che output, processa l'audio
 
     // === OTHER MEMBERS =======================================================
-    void set_wet(float val);
-    void set_dry(float val);
-    void set_ds(int val);
+    void set_freqOsc(float val);
+    void set_sweepWidth(float val);
+    void set_depth(float val);
     void set_fb(float val);
 
 
@@ -49,9 +49,11 @@ private:
     // === OUR PRIVATE MEMBERS =================================================
     AudioSampleBuffer dbuf; // delay buffer
     int dw; // writing head
+    float ph; // phase LFO
 
-    float wet;
-    float dry;
+    float freqOsc; // Frequency LFO
+    float sweepWidth; // Width LFO in samples (campioni di ritardo)
+    float depth; // Depth Flanger (0 - 1)
     float fb; // feedback
-    int ds;   // delay in samples
+    
 };
