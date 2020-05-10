@@ -9,6 +9,7 @@ FlangerEditor::FlangerEditor (FlangerProcessor& p)
     // editor's size to whatever you need it to be.
 
     freqOscSlider.setRange(0.0, 3.0);
+    freqOscSlider.setValue(processor.get_freqOsc());
     freqOscSlider.setTextBoxStyle(Slider::TextBoxRight, false, 100, 20);
     freqOscSlider.addListener(this);
     freqOscLabel.setText("Frequency", dontSendNotification);
@@ -17,6 +18,7 @@ FlangerEditor::FlangerEditor (FlangerProcessor& p)
     addAndMakeVisible(freqOscLabel);
 
     sweepWidthSlider.setRange(0.0, 25e-3);
+    sweepWidthSlider.setValue(processor.get_sweepWidth());
     sweepWidthSlider.setTextBoxStyle(Slider::TextBoxRight, false, 100, 20);
     sweepWidthSlider.addListener(this);
     sweepWidthLabel.setText("Sweep Width", dontSendNotification);
@@ -25,6 +27,7 @@ FlangerEditor::FlangerEditor (FlangerProcessor& p)
     addAndMakeVisible(sweepWidthLabel);
 
     depthSlider.setRange(0.0, 1.0);
+    depthSlider.setValue(processor.get_depth());
     depthSlider.setTextBoxStyle(Slider::TextBoxRight, false, 100, 20);
     depthSlider.addListener(this);
     depthLabel.setText("Depth", dontSendNotification);
@@ -33,6 +36,7 @@ FlangerEditor::FlangerEditor (FlangerProcessor& p)
     addAndMakeVisible(depthLabel);
 
     fbackSlider.setRange(0.0, 1.0);
+    fbackSlider.setValue(processor.get_fb());
     fbackSlider.setTextBoxStyle(Slider::TextBoxRight, false, 100, 20);
     fbackSlider.addListener(this);
     fbackLabel.setText("Feedback", dontSendNotification);

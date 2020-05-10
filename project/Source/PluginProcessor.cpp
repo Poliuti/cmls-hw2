@@ -99,9 +99,17 @@ void FlangerProcessor::set_freqOsc(float val)
     freqOsc = val;
 }
 
+float FlangerProcessor::get_freqOsc(void) {
+    return freqOsc;
+}
+
 void FlangerProcessor::set_sweepWidth(float val)
 {
     sweepWidth = val;
+}
+
+float FlangerProcessor::get_sweepWidth(void) {
+    return sweepWidth;
 }
 
 void FlangerProcessor::set_depth(float val)
@@ -109,11 +117,18 @@ void FlangerProcessor::set_depth(float val)
     depth = val;
 }
 
+float FlangerProcessor::get_depth(void) {
+    return depth;
+}
+
 void FlangerProcessor::set_fb(float val)
 {
     fb = val;
 }
 
+float FlangerProcessor::get_fb(void) {
+    return fb;
+}
 
 
 

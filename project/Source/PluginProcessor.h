@@ -19,9 +19,13 @@ public:
 
     // === OTHER MEMBERS =======================================================
     void set_freqOsc(float val);
+    float get_freqOsc(void);
     void set_sweepWidth(float val);
+    float get_sweepWidth(void);
     void set_depth(float val);
+    float get_depth(void);
     void set_fb(float val);
+    float get_fb(void);
 
 
     /// === JUCE GENERATED CODE ================================================
