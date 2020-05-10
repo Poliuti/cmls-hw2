@@ -22,6 +22,13 @@ void FlangerProcessor::releaseResources()
     // spare memory, etc.
 }
 
+/* float FlangerProcessor::waveFunction(float ph) {
+    swith (chosenWave) {
+        case sine:
+            return 0.5f + 0.5f * sinf(2.0 * M_PI * ph);
+    }
+} */
+
 void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
     ScopedNoDenormals noDenormals;
@@ -60,6 +67,7 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
 
         // Recalculate the read pointer position with respect to
         // the write pointer.
+        //float currentDelay = sweepWidth_now * waveFunction(ph);
         float currentDelay = sweepWidth_now * (0.5f + 0.5f * sinf(2.0 * M_PI * ph));
 
         // Subtract 3 samples to the delay pointer to make sure
