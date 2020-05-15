@@ -18,6 +18,12 @@ public:
     void processBlock(AudioBuffer<float>&, MidiBuffer&) override; // AudioBuffer contiene sia input che output, processa l'audio
 
     // === OTHER MEMBERS =======================================================
+    enum oscFunction {sineWave, squareWave, sawtoothWave, triangleWave, inv_sawWave, randWave};
+    float waveForm(float, oscFunction);
+
+    void set_chosenWave(oscFunction val);
+    oscFunction get_chosenWave(void);
+    
     void set_freqOsc(float val);
     float get_freqOsc(void);
     void set_sweepWidth(float val);
@@ -46,7 +52,8 @@ public:
     void changeProgramName(int index, const String& newName) override;
     void getStateInformation(MemoryBlock& destData) override;
     void setStateInformation(const void* data, int sizeInBytes) override;
-
+    
+    
 private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FlangerProcessor)
 
@@ -54,10 +61,14 @@ private:
     AudioSampleBuffer dbuf; // delay buffer
     int dw; // writing head
     float ph; // phase LFO
+    
+    
+    oscFunction chosenWave;
+    float phtmp;
+    float rnd;
 
     float freqOsc; // Frequency LFO
     float sweepWidth; // Width LFO in samples (campioni di ritardo)
     float depth; // Depth Flanger (0 - 1)
     float fb; // feedback
-
 };

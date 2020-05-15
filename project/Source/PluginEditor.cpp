@@ -7,8 +7,8 @@ FlangerEditor::FlangerEditor(FlangerProcessor& p)
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-
-    freqOscSlider.setRange(0.0, 3.0);
+    
+    freqOscSlider.setRange(0.0, 10.0);
     freqOscSlider.setValue(processor.get_freqOsc());
     freqOscSlider.setTextBoxStyle(Slider::TextBoxRight, false, 100, 20);
     freqOscSlider.addListener(this);
@@ -66,7 +66,7 @@ void FlangerEditor::resized()
 {
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
-
+    
     freqOscLabel.setBounds (10, 10, 90, 20);
     freqOscSlider.setBounds (100, 10, getWidth() - 110, 20);
 

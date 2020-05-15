@@ -2,6 +2,9 @@
 #include "PluginEditor.h"
 
 #include <math.h>
+#include <cstdlib>
+#include <ctime>
+#include <string>
 
 // === OUR CODE ================================================================
 
@@ -22,12 +25,42 @@ void FlangerProcessor::releaseResources()
     // spare memory, etc.
 }
 
-/* float FlangerProcessor::waveFunction(float ph) {
-    swith (chosenWave) {
-        case sine:
-            return 0.5f + 0.5f * sinf(2.0 * M_PI * ph);
-    }
-} */
+float FlangerProcessor::waveForm(float ph, oscFunction chosenWave)
+{
+    switch(chosenWave)
+ {
+    case sineWave:
+    return 0.5f + 0.5f * sinf(2.0 * M_PI * ph);
+     
+    case squareWave:
+       /*float sqr;
+         if(ph!=0)
+             sqr = 0.5f + 0.5f * abs(sinf(2.0 * M_PI * ph))/sinf(2.0 * M_PI * ph);
+         else
+             sqr = 0; */
+         float sqr;
+         if(ph < 0.5) sqr = 0;
+         else sqr = 1;
+    return sqr;
+    
+    case sawtoothWave:
+    return 0.5f + 0.5f * (-1) * ph;
+         
+    case triangleWave:
+         float tri;
+         if(ph < 0.5) tri = 2*ph;
+         else tri = 2*(1-ph);
+    return  tri;
+    
+    case inv_sawWave:
+    return 0.5f + 0.5f * ph;
+
+    case randWave:
+       //srand ((unsigned int) (time(0)));
+       if(ph - phtmp < 0) rnd = rand()%100;
+    return rnd/100;
+ }
+}
 
 void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
@@ -50,7 +83,8 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
 
     int numSamples = buffer.getNumSamples();
     int delayBufLength = dbuf.getNumSamples();
-
+    chosenWave = randWave;
+    oscFunction chosenWave_now = chosenWave;
     float freqOsc_now = freqOsc;
     float sweepWidth_now = sweepWidth;
     float fb_now = fb;
@@ -67,8 +101,7 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
 
         // Recalculate the read pointer position with respect to
         // the write pointer.
-        //float currentDelay = sweepWidth_now * waveFunction(ph);
-        float currentDelay = sweepWidth_now * (0.5f + 0.5f * sinf(2.0 * M_PI * ph));
+        float currentDelay = sweepWidth_now * waveForm(ph, chosenWave_now);
 
         // Subtract 3 samples to the delay pointer to make sure
         // we have enough previous samples to interpolate with
@@ -97,9 +130,21 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
         channelOutDataL[i] = in + depth_now * interpolatedSample;
         channelOutDataR[i] = channelOutDataL[i];
         // Update the LFO phase, keeping it in the range 0-1
+        phtmp = ph; //per l'onda random
         ph += freqOsc_now / getSampleRate();
         if (ph >= 1.0) ph -= 1.0;
+
     }
+}
+
+
+void FlangerProcessor::set_chosenWave(oscFunction val)
+{
+    chosenWave = val;
+}
+
+FlangerProcessor::oscFunction FlangerProcessor::get_chosenWave(void) {
+    return chosenWave;
 }
 
 void FlangerProcessor::set_freqOsc(float val)
