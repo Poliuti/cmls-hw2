@@ -15,8 +15,7 @@ void FlangerProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 
     dbuf.setSize(getTotalNumOutputChannels(), 100000);
     dbuf.clear();
-    dwL = 0;
-    dwR = 0;
+    dw = 0;
     ph = 0;
     phR = 0;
 }
@@ -100,7 +99,7 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
 
     for (int i = 0; i < numSamples; i++) {
         const float in = channelInData[i];
-
+        
         // Recalculate the read pointer position with respect to
         // the write pointer.
         float currentDelayL = sweepWidth_now * waveForm(ph, chosenWave_now);
@@ -109,8 +108,8 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
 
         // Subtract 3 samples to the delay pointer to make sure
         // we have enough previous samples to interpolate with
-        float drL = fmodf((float)dwL - (float)(currentDelayL * getSampleRate()) + (float)delayBufLength - 3.0, (float)delayBufLength);
-         float drR = fmodf((float)dwR - (float)(currentDelayR * getSampleRate()) + (float)delayBufLength - 3.0, (float)delayBufLength);
+        float drL = fmodf((float)dw - (float)(currentDelayL * getSampleRate()) + (float)delayBufLength - 3.0, (float)delayBufLength);
+         float drR = fmodf((float)dw - (float)(currentDelayR * getSampleRate()) + (float)delayBufLength - 3.0, (float)delayBufLength);
         // (N + K) % K == N % K
         // -3 % 10 = -3 (risultato di c++) // 7 (risultato matematico)
         //                     ↓
@@ -133,11 +132,10 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
         // With feedback, what we read is included in what gets
         // stored in the buffer, otherwise it’s just a simple
         // delay line of the input signal.
-        delayL[dwL] = in + (interpolatedSampleL * fb_now);
-        delayR[dwR] = in + (interpolatedSampleR * fb_now);
+        delayL[dw] = in + (interpolatedSampleL * fb_now);
+        delayR[dw] = in + (interpolatedSampleR * fb_now);
 
-        dwL = (dwL + 1) % delayBufLength;
-        dwR = (dwR + 1) % delayBufLength;
+        dw = (dw + 1) % delayBufLength;
 
         channelOutDataL[i] = in + depth_now * interpolatedSampleL;
         channelOutDataR[i] = in + depth_now * interpolatedSampleR;

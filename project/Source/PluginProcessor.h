@@ -59,7 +59,7 @@ private:
 
     // === OUR PRIVATE MEMBERS =================================================
     AudioSampleBuffer dbuf; // delay buffer
-    int dwL, dwR; // writing head
+    int dw; // writing head
     float ph, phR; // phase LFO
 
     oscFunction chosenWave;
