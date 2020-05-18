@@ -19,7 +19,7 @@ public:
 
     // === OTHER MEMBERS =======================================================
     enum oscFunction {sineWave, squareWave, sawtoothWave, triangleWave, inv_sawWave, randWave};
-    float waveForm(float, oscFunction);
+    float waveForm(float phi, oscFunction waveform);
 
     void set_chosenWave(oscFunction val);
     oscFunction get_chosenWave(void);
@@ -59,13 +59,13 @@ private:
 
     // === OUR PRIVATE MEMBERS =================================================
     AudioSampleBuffer dbuf; // delay buffer
-    int dw; // writing head
-    float ph; // phase LFO
-    
-    
+    int dwL, dwR; // writing head
+    float ph, phR; // phase LFO
+
     oscFunction chosenWave;
     float phtmp;
     float rnd;
+    float deltaPh; // Frequency LFO
 
     float freqOsc; // Frequency LFO
     float sweepWidth; // Width LFO in samples (campioni di ritardo)
