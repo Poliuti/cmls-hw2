@@ -3,7 +3,7 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 
-class FlangerEditor : public AudioProcessorEditor,  private Slider::Listener
+class FlangerEditor : public AudioProcessorEditor
 {
 public:
     FlangerEditor(FlangerProcessor&);
@@ -23,8 +23,6 @@ private:
     Label depthLabel;
     Slider fbackSlider;
     Label fbackLabel;
-
-    void sliderValueChanged(Slider* slider) override;
 
     // === JUCE GENERATED CODE =================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FlangerEditor)

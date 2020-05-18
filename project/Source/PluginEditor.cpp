@@ -7,11 +7,11 @@ FlangerEditor::FlangerEditor(FlangerProcessor& p)
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    
+
     freqOscSlider.setRange(0.0, 10.0);
     freqOscSlider.setValue(processor.get_freqOsc());
     freqOscSlider.setTextBoxStyle(Slider::TextBoxRight, false, 100, 20);
-    freqOscSlider.addListener(this);
+    freqOscSlider.onValueChange = [this] { processor.set_freqOsc(freqOscSlider.getValue()); };
     freqOscLabel.setText("Frequency", dontSendNotification);
 
     addAndMakeVisible(freqOscSlider);
@@ -20,7 +20,7 @@ FlangerEditor::FlangerEditor(FlangerProcessor& p)
     sweepWidthSlider.setRange(0.0, 25e-3);
     sweepWidthSlider.setValue(processor.get_sweepWidth());
     sweepWidthSlider.setTextBoxStyle(Slider::TextBoxRight, false, 100, 20);
-    sweepWidthSlider.addListener(this);
+    sweepWidthSlider.onValueChange = [this] { processor.set_sweepWidth(sweepWidthSlider.getValue()); };
     sweepWidthLabel.setText("Sweep Width", dontSendNotification);
 
     addAndMakeVisible(sweepWidthSlider);
@@ -29,7 +29,7 @@ FlangerEditor::FlangerEditor(FlangerProcessor& p)
     depthSlider.setRange(0.0, 1.0);
     depthSlider.setValue(processor.get_depth());
     depthSlider.setTextBoxStyle(Slider::TextBoxRight, false, 100, 20);
-    depthSlider.addListener(this);
+    depthSlider.onValueChange = [this] { processor.set_depth(depthSlider.getValue()); };
     depthLabel.setText("Depth", dontSendNotification);
 
     addAndMakeVisible(depthSlider);
@@ -38,7 +38,7 @@ FlangerEditor::FlangerEditor(FlangerProcessor& p)
     fbackSlider.setRange(0.0, 1.0);
     fbackSlider.setValue(processor.get_fb());
     fbackSlider.setTextBoxStyle(Slider::TextBoxRight, false, 100, 20);
-    fbackSlider.addListener(this);
+    fbackSlider.onValueChange = [this] { processor.set_fb(fbackSlider.getValue()); };
     fbackLabel.setText("Feedback", dontSendNotification);
 
     addAndMakeVisible(fbackSlider);
@@ -66,7 +66,7 @@ void FlangerEditor::resized()
 {
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
-    
+
     freqOscLabel.setBounds (10, 10, 90, 20);
     freqOscSlider.setBounds (100, 10, getWidth() - 110, 20);
 
@@ -79,16 +79,3 @@ void FlangerEditor::resized()
     fbackLabel.setBounds(10, 130, 90, 20);
     fbackSlider.setBounds(100, 130, getWidth() - 110, 20);
 }
-
-void FlangerEditor::sliderValueChanged(Slider *slider)
-{
-    if (slider == &freqOscSlider)
-        processor.set_freqOsc(freqOscSlider.getValue());
-    else if (slider == &sweepWidthSlider)
-        processor.set_sweepWidth(sweepWidthSlider.getValue());
-    else if (slider == &depthSlider)
-        processor.set_depth(depthSlider.getValue());
-    else if (slider == &fbackSlider)
-        processor.set_fb(fbackSlider.getValue());
-}
-
