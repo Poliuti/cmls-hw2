@@ -45,6 +45,9 @@ FlangerEditor::FlangerEditor(FlangerProcessor& p)
 
 FlangerEditor::~FlangerEditor()
 {
+    for (Slider* s : sliders) {
+        delete s;
+    }
 }
 
 //==============================================================================

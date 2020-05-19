@@ -16,7 +16,6 @@ private:
     FlangerProcessor& processor;
 
     OwnedArray<Slider> sliders;
-    OwnedArray<Label> labels;
 
     // === JUCE GENERATED CODE =================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FlangerEditor)
