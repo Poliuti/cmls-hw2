@@ -8,6 +8,28 @@
 
 // === OUR CODE ================================================================
 
+FlangerProcessor::FlangerProcessor()
+#ifndef JucePlugin_PreferredChannelConfigurations
+     : AudioProcessor (BusesProperties()
+                     #if ! JucePlugin_IsMidiEffect
+                      #if ! JucePlugin_IsSynth
+                       .withInput  ("Input",  AudioChannelSet::stereo(), true)
+                      #endif
+                       .withOutput ("Output", AudioChannelSet::stereo(), true)
+                     #endif
+                       )
+#endif
+{
+    freqOsc = 0.0f;
+    sweepWidth = 0.0f;
+    depth = 0.0f;
+    fb = 0.0f;
+}
+
+FlangerProcessor::~FlangerProcessor()
+{
+}
+
 void FlangerProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
     // Use this method as the place to do any pre-playback
@@ -207,25 +229,6 @@ float FlangerProcessor::get_fb(void) {
 
 
 // === JUCE GENERATED CODE =====================================================
-
-//==============================================================================
-FlangerProcessor::FlangerProcessor()
-#ifndef JucePlugin_PreferredChannelConfigurations
-     : AudioProcessor (BusesProperties()
-                     #if ! JucePlugin_IsMidiEffect
-                      #if ! JucePlugin_IsSynth
-                       .withInput  ("Input",  AudioChannelSet::stereo(), true)
-                      #endif
-                       .withOutput ("Output", AudioChannelSet::stereo(), true)
-                     #endif
-                       )
-#endif
-{
-}
-
-FlangerProcessor::~FlangerProcessor()
-{
-}
 
 //==============================================================================
 const String FlangerProcessor::getName() const
