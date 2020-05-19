@@ -100,22 +100,17 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
     for (int i = 0; i < numSamples; i++) {
         const float in = channelInData[i];
         
-        //void flanging(float channel, float waveForm, )
+        //void flanging(float channel, float waveForm, ) da fare
         
         // Recalculate the read pointer position with respect to
         // the write pointer.
         float currentDelayL = sweepWidth_now * waveForm(ph, chosenWave_now);
-        // Subtract 3 samples to the delay pointer to make sure
+        
+        // Subtract 4 samples to the delay pointer to make sure
         // we have enough previous samples to interpolate with
         float drL = fmodf((float)dw - (float)(currentDelayL * getSampleRate()) + (float)delayBufLength - 4.0, (float)delayBufLength);
-        // (N + K) % K == N % K
-        // -3 % 10 = -3 (risultato di c++) // 7 (risultato matematico)
-        //                     ↓
-        // [-9 -8 -7 -6 -5 -4 -3 -2 -1 0]
-        // [1   2  3  4  5  6  7  8  9 10] ← classi di equivalenza
-        // [11 12 13 14 15 16 17 18 19 20]
-
-        // Use linear interpolation to read a fractional index
+        
+        // POLINOMIAL 2nd order INTERPOLATION
         // into the buffer.
         int nextSampleL = (int)floorf(drL);                                             // y[0]
         int next_nextSampleL = (nextSampleL + 1) % delayBufLength;                      // y[1]
@@ -127,6 +122,10 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
         float frac2L = fractionL * fractionL;
         float interpolatedSampleL = (c2L * frac2L) + (c1L * fractionL) + c0L;
         
+        // Store the current information in the delay buffer.
+        // With feedback, what we read is included in what gets
+        // stored in the buffer, otherwise it’s just a simple
+        // delay line of the input signal.
         delayL[dw] = in + (interpolatedSampleL * fb_now);
 
         
@@ -147,41 +146,33 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
 
         // POLINOMIAL 3rd order INTERPOLATION
         // into the buffer.
-        //int prev_previousSampleL = (int)floorf(drL)-1 % delayBufLength;     // x[n-1]
-        //int previousSampleL = (int)floorf(drL);                             // x[n]
-        //int nextSampleL = (previousSampleL + 1) % delayBufLength;           // x[n+1]
-        //int next_nextSampleL = (previousSampleL + 2) % delayBufLength;      // x[n+2]
-        //float fractionL = drL - floorf(drL);
-        //float c0L = delayL[previousSampleL];
-        //float c1L = delayL[nextSampleL] - delayL[prev_previousSampleL];
-        //float c2L = delayL[prev_previousSampleL] - delayL[previousSampleL] - 1;  //a0=???
-        //float c3L = -delayL[prev_previousSampleL] + delayL[previousSampleL] - delayL[nextSampleL] + delayL[next_nextSampleL];
-        //float frac2L = fractionL * fractionL;
-        //float frac3L = frac2L * fractionL;
-        //float interpolatedSampleL = (c3L*frac3L) + (c2L*frac2L) + (c1L*fractionL) + c0L;
+        /*
+        int prev_previousSampleL = (int)floorf(drL)-1 % delayBufLength;     // x[n-1]
+        int previousSampleL = (int)floorf(drL);                             // x[n]
+        int nextSampleL = (previousSampleL + 1) % delayBufLength;           // x[n+1]
+        int next_nextSampleL = (previousSampleL + 2) % delayBufLength;      // x[n+2]
+        float fractionL = drL - floorf(drL);
+        float c0L = delayL[previousSampleL];
+        float c1L = delayL[nextSampleL] - delayL[prev_previousSampleL];
+        float c2L = delayL[prev_previousSampleL] - delayL[previousSampleL] - 1;  //a0=???
+        float c3L = -delayL[prev_previousSampleL] + delayL[previousSampleL] - delayL[nextSampleL] + delayL[next_nextSampleL];
+        float frac2L = fractionL * fractionL;
+        float frac3L = frac2L * fractionL;
+        float interpolatedSampleL = (c3L*frac3L) + (c2L*frac2L) + (c1L*fractionL) + c0L;
         
-        //int prev_previousSampleR = (int)floorf(drR)-1% delayBufLength;      // x[n-1]
-        //int previousSampleR = (int)floorf(drR);                             // x[n]
-        //int nextSampleR = (previousSampleR + 1) % delayBufLength;           // x[n+1]
-        //int next_nextSampleR = (previousSampleR + 2) % delayBufLength;      // x[n+2]
-        //float fractionR = drR - floorf(drR);
-        //float c0R = delayR[previousSampleR];
-        //float c1R = delayR[nextSampleR] - delayR[prev_previousSampleR];
-        //float c2R = delayR[prev_previousSampleR] - delayR[previousSampleR] - 1;
-        //float c3R = -delayR[prev_previousSampleR] + delayR[previousSampleR] - delayR[nextSampleR] + delayR[next_nextSampleR];
-        //float frac2R = fractionR * fractionR;
-        //float frac3R = frac2R * fractionR;
-        //float interpolatedSampleR = (c3R*frac3R) + (c2R*frac2R) + (c1R*fractionR) + c0R;
-
-        
-        
-        // Store the current information in the delay buffer.
-        // With feedback, what we read is included in what gets
-        // stored in the buffer, otherwise it’s just a simple
-        // delay line of the input signal.
-        
-
-        
+        int prev_previousSampleR = (int)floorf(drR)-1% delayBufLength;      // x[n-1]
+        int previousSampleR = (int)floorf(drR);                             // x[n]
+        int nextSampleR = (previousSampleR + 1) % delayBufLength;           // x[n+1]
+        int next_nextSampleR = (previousSampleR + 2) % delayBufLength;      // x[n+2]
+        float fractionR = drR - floorf(drR);
+        float c0R = delayR[previousSampleR];
+        float c1R = delayR[nextSampleR] - delayR[prev_previousSampleR];
+        float c2R = delayR[prev_previousSampleR] - delayR[previousSampleR] - 1;
+        float c3R = -delayR[prev_previousSampleR] + delayR[previousSampleR] - delayR[nextSampleR] + delayR[next_nextSampleR];
+        float frac2R = fractionR * fractionR;
+        float frac3R = frac2R * fractionR;
+        float interpolatedSampleR = (c3R*frac3R) + (c2R*frac2R) + (c1R*fractionR) + c0R;        
+        */
         
         dw = (dw + 1) % delayBufLength;
 
@@ -191,11 +182,6 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
         phtmp = ph; //per l'onda random
         ph += freqOsc_now / getSampleRate();
         if (ph >= 1.0) ph -= 1.0;
-        
-        //phtmp = phR; //per l'onda random
-        //phR += freqOsc_now / getSampleRate();
-        //if (phR >= 1.0 + deltaPh_now) phR -= 1.0;
-
     }
 }
 
