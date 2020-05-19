@@ -107,7 +107,7 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
         // Subtract 3 samples to the delay pointer to make sure
         // we have enough previous samples to interpolate with
         float drL = fmodf((float)dw - (float)(currentDelayL * getSampleRate()) + (float)delayBufLength - 4.0, (float)delayBufLength);
-         float drR = fmodf((float)dw - (float)(currentDelayR * getSampleRate()) + (float)delayBufLength - 4.0, (float)delayBufLength);
+        float drR = fmodf((float)dw - (float)(currentDelayR * getSampleRate()) + (float)delayBufLength - 4.0, (float)delayBufLength);
         // (N + K) % K == N % K
         // -3 % 10 = -3 (risultato di c++) // 7 (risultato matematico)
         //                     ↓
@@ -129,7 +129,7 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
         
         
         // POLINOMIAL 2nd order INTERPOLATION
-        // into the buffer.
+        
         int nextSampleL = (int)floorf(drL);                                             // y[0]
         int next_nextSampleL = (nextSampleL + 1) % delayBufLength;                      // y[1]
         int previousSampleL = (nextSampleL - 1 + delayBufLength) % delayBufLength;      // y[-1]
@@ -151,7 +151,7 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
         float interpolatedSampleR = (c2R * frac2R) + (c1R * fractionR) + c0R;
         
         // POLINOMIAL 3rd order INTERPOLATION
-        // into the buffer.
+        
         //int prev_previousSampleL = (int)floorf(drL)-1 % delayBufLength;     // x[n-1]
         //int previousSampleL = (int)floorf(drL);                             // x[n]
         //int nextSampleL = (previousSampleL + 1) % delayBufLength;           // x[n+1]
@@ -165,7 +165,7 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
         //float frac3L = frac2L * fractionL;
         //float interpolatedSampleL = (c3L*frac3L) + (c2L*frac2L) + (c1L*fractionL) + c0L;
         
-        //int prev_previousSampleR = (int)floorf(drR)-1% delayBufLength;      // x[n-1]
+        //int prev_previousSampleR = (int)floorf(drR)-1 % delayBufLength;      // x[n-1]
         //int previousSampleR = (int)floorf(drR);                             // x[n]
         //int nextSampleR = (previousSampleR + 1) % delayBufLength;           // x[n+1]
         //int next_nextSampleR = (previousSampleR + 2) % delayBufLength;      // x[n+2]
