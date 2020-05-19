@@ -17,7 +17,7 @@ void FlangerProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
     dbuf.clear();
     dw = 0;
     ph = 0;
-    phR = 0;
+    srand (time(NULL));
 }
 
 void FlangerProcessor::releaseResources()
@@ -32,7 +32,7 @@ float FlangerProcessor::waveForm(float ph, oscFunction chosenWave)
  {
     case sineWave:
     return 0.5f + 0.5f * sinf(2.0 * M_PI * ph);
-     
+    
     case squareWave:
        float sqr;
          if(ph!=0)
@@ -42,17 +42,17 @@ float FlangerProcessor::waveForm(float ph, oscFunction chosenWave)
     return sqr;
     
     case sawtoothWave:
-    return 1 - (ph - floor(ph));
+    return 1 - (ph - floorf(ph));
          
+    case inv_sawWave:
+    return ph - floorf(ph);
+
     case triangleWave:
          float tri;
-         if(ph - floor(ph) < 0.5) tri = 2*(ph - floor(ph));
-         else tri = 2*(1-ph - floor(ph));
+         if(ph - floorf(ph) < 0.5) tri = 2*(ph - floorf(ph));
+         else tri = 2*(1-ph - floorf(ph));
     return  tri;
     
-    case inv_sawWave:
-    return ph - floor(ph);
-
     case randWave:
        //srand ((unsigned int) (time(NULL)));
        if(ph - phtmp < 0) rnd = rand()%100;
@@ -75,7 +75,7 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
     // this code if your algorithm always overwrites all the output channels.
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; i++)
         buffer.clear(i, 0, buffer.getNumSamples());
-
+    
     // This is the place where you'd normally do the guts of your plugin's
     // audio processing...
 
@@ -100,41 +100,35 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
     for (int i = 0; i < numSamples; i++) {
         const float in = channelInData[i];
         
+        void flanging(float channel, float waveForm, )
         // Recalculate the read pointer position with respect to
         // the write pointer.
         float currentDelayL = sweepWidth_now * waveForm(ph, chosenWave_now);
-        phR = ph + deltaPh_now;
-        float currentDelayR = sweepWidth_now * waveForm(phR, chosenWave_now);
-
         // Subtract 3 samples to the delay pointer to make sure
         // we have enough previous samples to interpolate with
         float drL = fmodf((float)dw - (float)(currentDelayL * getSampleRate()) + (float)delayBufLength - 3.0, (float)delayBufLength);
-         float drR = fmodf((float)dw - (float)(currentDelayR * getSampleRate()) + (float)delayBufLength - 3.0, (float)delayBufLength);
-        // (N + K) % K == N % K
-        // -3 % 10 = -3 (risultato di c++) // 7 (risultato matematico)
-        //                     ↓
-        // [-9 -8 -7 -6 -5 -4 -3 -2 -1 0]
-        // [1   2  3  4  5  6  7  8  9 10] ← classi di equivalenza
-        // [11 12 13 14 15 16 17 18 19 20]
-
         // Use linear interpolation to read a fractional index
         // into the buffer.
         float fractionL = drL - floorf(drL);
         int previousSampleL = (int)floorf(drL);
         int nextSampleL = (previousSampleL + 1) % delayBufLength;
         float interpolatedSampleL = fractionL*delayL[nextSampleL] + (1.0f-fractionL)*delayL[previousSampleL];
-
-        float fractionR = drR - floorf(drR);
-        int previousSampleR = (int)floorf(drR);
-        int nextSampleR = (previousSampleR + 1) % delayBufLength;
-        float interpolatedSampleR = fractionR*delayR[nextSampleR] + (1.0f-fractionR)*delayR[previousSampleR];
         // Store the current information in the delay buffer.
         // With feedback, what we read is included in what gets
         // stored in the buffer, otherwise it’s just a simple
         // delay line of the input signal.
         delayL[dw] = in + (interpolatedSampleL * fb_now);
+        
+        float currentDelayR = sweepWidth_now * waveForm(ph + deltaPh_now, chosenWave_now);
+        float drR = fmodf((float)dw - (float)(currentDelayR * getSampleRate()) + (float)delayBufLength - 3.0, (float)delayBufLength);
+        float fractionR = drR - floorf(drR);
+        int previousSampleR = (int)floorf(drR);
+        int nextSampleR = (previousSampleR + 1) % delayBufLength;
+        float interpolatedSampleR = fractionR*delayR[nextSampleR] + (1.0f-fractionR)*delayR[previousSampleR];
         delayR[dw] = in + (interpolatedSampleR * fb_now);
 
+        
+        
         dw = (dw + 1) % delayBufLength;
 
         channelOutDataL[i] = in + depth_now * interpolatedSampleL;
