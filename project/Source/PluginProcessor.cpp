@@ -33,7 +33,7 @@ float FlangerProcessor::waveForm(float ph, oscFunction chosenWave)
  {
     case sineWave:
     return 0.5f + 0.5f * sinf(2.0 * M_PI * ph);
-     
+
     case squareWave:
        float sqr;
          if(ph!=0)
@@ -41,16 +41,16 @@ float FlangerProcessor::waveForm(float ph, oscFunction chosenWave)
          else
              sqr = 0.5f;
     return sqr;
-    
+
     case sawtoothWave:
     return 1 - (ph - floor(ph));
-         
+
     case triangleWave:
          float tri;
          if(ph - floor(ph) < 0.5) tri = 2*(ph - floor(ph));
          else tri = 2*(1-ph - floor(ph));
     return  tri;
-    
+
     case inv_sawWave:
     return ph - floor(ph);
 
@@ -90,7 +90,7 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
     float depth_now = depth;
     float deltaPh_now = deltaPh;
     deltaPh_now = 0.5;
-    
+
     float* channelOutDataL = buffer.getWritePointer(0);
     float* channelOutDataR = buffer.getWritePointer(1);
     float* delayL = dbuf.getWritePointer(0);
@@ -145,7 +145,7 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
         phtmp = ph; //per l'onda random
         ph += freqOsc_now / getSampleRate();
         if (ph >= 1.0) ph -= 1.0;
-        
+
         //phtmp = phR; //per l'onda random
         //phR += freqOsc_now / getSampleRate();
         //if (phR >= 1.0 + deltaPh_now) phR -= 1.0;

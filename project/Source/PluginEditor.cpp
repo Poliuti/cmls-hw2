@@ -1,6 +1,13 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+struct UIelements {
+    String label;
+    float range[2];
+    float (FlangerProcessor::*get_func)(void);
+    void (FlangerProcessor::*set_func)(float);
+};
+
 //==============================================================================
 FlangerEditor::FlangerEditor(FlangerProcessor& p)
     : AudioProcessorEditor(&p), processor(p)
@@ -8,41 +15,30 @@ FlangerEditor::FlangerEditor(FlangerProcessor& p)
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
 
-    freqOscSlider.setRange(0.0, 10.0);
-    freqOscSlider.setValue(processor.get_freqOsc());
-    freqOscSlider.setTextBoxStyle(Slider::TextBoxRight, false, 100, 20);
-    freqOscSlider.onValueChange = [this] { processor.set_freqOsc(freqOscSlider.getValue()); };
-    freqOscLabel.setText("Frequency", dontSendNotification);
+    // Describe GUI
+    UIelements ui_elements[] = {
+        {"LFO frequency", {0.0, 10.0},  &FlangerProcessor::get_freqOsc,    &FlangerProcessor::set_freqOsc},
+        {"Sweep width",   {0.0, 25e-3}, &FlangerProcessor::get_sweepWidth, &FlangerProcessor::set_sweepWidth},
+        {"Depth",         {0.0, 1.0},   &FlangerProcessor::get_depth,      &FlangerProcessor::set_depth},
+        {"Feedback",      {0.0, 1.0},   &FlangerProcessor::get_fb,         &FlangerProcessor::set_fb},
+    };
 
-    addAndMakeVisible(freqOscSlider);
-    addAndMakeVisible(freqOscLabel);
-
-    sweepWidthSlider.setRange(0.0, 25e-3);
-    sweepWidthSlider.setValue(processor.get_sweepWidth());
-    sweepWidthSlider.setTextBoxStyle(Slider::TextBoxRight, false, 100, 20);
-    sweepWidthSlider.onValueChange = [this] { processor.set_sweepWidth(sweepWidthSlider.getValue()); };
-    sweepWidthLabel.setText("Sweep Width", dontSendNotification);
-
-    addAndMakeVisible(sweepWidthSlider);
-    addAndMakeVisible(sweepWidthLabel);
-
-    depthSlider.setRange(0.0, 1.0);
-    depthSlider.setValue(processor.get_depth());
-    depthSlider.setTextBoxStyle(Slider::TextBoxRight, false, 100, 20);
-    depthSlider.onValueChange = [this] { processor.set_depth(depthSlider.getValue()); };
-    depthLabel.setText("Depth", dontSendNotification);
-
-    addAndMakeVisible(depthSlider);
-    addAndMakeVisible(depthLabel);
-
-    fbackSlider.setRange(0.0, 1.0);
-    fbackSlider.setValue(processor.get_fb());
-    fbackSlider.setTextBoxStyle(Slider::TextBoxRight, false, 100, 20);
-    fbackSlider.onValueChange = [this] { processor.set_fb(fbackSlider.getValue()); };
-    fbackLabel.setText("Feedback", dontSendNotification);
-
-    addAndMakeVisible(fbackSlider);
-    addAndMakeVisible(fbackLabel);
+    for (UIelements item : ui_elements) {
+        Slider* s = new Slider();
+        Label* l = new Label();
+        s->setRange(item.range[0], item.range[1]);
+        s->setValue((processor.*(item.get_func))());
+        s->setTextBoxStyle(Slider::TextBoxRight, false, 100, 20); // cambiare numeri
+        s->onValueChange = [this, s, &item] {
+            auto v = s->getValue();
+            (processor.*(item.set_func))(0.0f);
+        };
+        l->setText(item.label, dontSendNotification);
+        sliders.add(s);
+        labels.add(l);
+        addAndMakeVisible(s);
+        addAndMakeVisible(l);
+    }
 
     setSize(400, 300);
 }
@@ -55,27 +51,23 @@ FlangerEditor::~FlangerEditor()
 void FlangerEditor::paint(Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId));
-
-    g.setColour (Colours::white);
-    g.setFont (15.0f);
-    g.drawFittedText ("Hello World!", getLocalBounds(), Justification::centred, 1);
+    g.fillAll(getLookAndFeel().findColour (ResizableWindow::backgroundColourId));
+    g.setColour(Colours::white);
+    g.setFont(16.0f);
 }
 
 void FlangerEditor::resized()
 {
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
+    FlexBox flow;
+    flow.flexWrap = FlexBox::Wrap::wrap;
+    flow.justifyContent = FlexBox::JustifyContent::center;
+    flow.alignContent = FlexBox::AlignContent::center;
 
-    freqOscLabel.setBounds (10, 10, 90, 20);
-    freqOscSlider.setBounds (100, 10, getWidth() - 110, 20);
+    for (Slider* s : sliders) {
+        flow.items.add(FlexItem(*s).withMinWidth(50.0f).withMinHeight(50.0f));
+    }
 
-    sweepWidthLabel.setBounds (10, 50, 90, 20);
-    sweepWidthSlider.setBounds (100, 50, getWidth() - 110, 20);
-
-    depthLabel.setBounds (10, 90, 90, 20);
-    depthSlider.setBounds (100, 90, getWidth() - 110, 20);
-
-    fbackLabel.setBounds(10, 130, 90, 20);
-    fbackSlider.setBounds(100, 130, getWidth() - 110, 20);
+    flow.performLayout(getLocalBounds().toFloat());
 }
