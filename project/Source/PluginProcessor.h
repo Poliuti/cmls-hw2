@@ -21,6 +21,8 @@ public:
     enum oscFunction {sineWave, squareWave, sawtoothWave, triangleWave, inv_sawWave, randWave};
     float waveForm(float phi, oscFunction waveform);
 
+    float interpolate(float dr, int delayBufLength, float* delay);
+
     void set_chosenWave(oscFunction val);
     oscFunction get_chosenWave(void);
     
@@ -66,7 +68,7 @@ private:
     float phtmp;
     float rnd;
     float deltaPh; // Frequency LFO
-
+    
     float freqOsc; // Frequency LFO
     float sweepWidth; // Width LFO in samples (campioni di ritardo)
     float depth; // Depth Flanger (0 - 1)
