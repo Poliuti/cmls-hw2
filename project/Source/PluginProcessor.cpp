@@ -24,6 +24,7 @@ FlangerProcessor::FlangerProcessor()
     sweepWidth = 0.0f;
     depth = 0.0f;
     fb = 0.0f;
+    chosenWave = OscFunction::sineWave;
 }
 
 FlangerProcessor::~FlangerProcessor()
@@ -104,7 +105,6 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
 
     int numSamples = buffer.getNumSamples();
     int delayBufLength = dbuf.getNumSamples();
-    chosenWave = OscFunction::squareWave;
     OscFunction chosenWave_now = chosenWave;
     float freqOsc_now = freqOsc;
     float sweepWidth_now = sweepWidth;
