@@ -106,8 +106,8 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
 
         // Subtract 3 samples to the delay pointer to make sure
         // we have enough previous samples to interpolate with
-        float drL = fmodf((float)dw - (float)(currentDelayL * getSampleRate()) + (float)delayBufLength - 3.0, (float)delayBufLength);
-         float drR = fmodf((float)dw - (float)(currentDelayR * getSampleRate()) + (float)delayBufLength - 3.0, (float)delayBufLength);
+        float drL = fmodf((float)dw - (float)(currentDelayL * getSampleRate()) + (float)delayBufLength - 4.0, (float)delayBufLength);
+         float drR = fmodf((float)dw - (float)(currentDelayR * getSampleRate()) + (float)delayBufLength - 4.0, (float)delayBufLength);
         // (N + K) % K == N % K
         // -3 % 10 = -3 (risultato di c++) // 7 (risultato matematico)
         //                     ↓
@@ -149,7 +149,6 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
         float c2R = (delayR[next_nextSampleR] - (2 * delayR[nextSampleR]) + delayR[previousSampleR]) / 2;
         float frac2R = fractionR * fractionR;
         float interpolatedSampleR = (c2R * frac2R) + (c1R * fractionR) + c0R;
-        
         
         // POLINOMIAL 3rd order INTERPOLATION
         // into the buffer.
