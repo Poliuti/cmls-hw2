@@ -2,7 +2,7 @@
 
 #include <JuceHeader.h>
 
-enum class OscFunction { sineWave, squareWave, sawtoothWave, triangleWave, inv_sawWave, randWave };
+enum OscFunction : int { sineWave = 1, squareWave, sawtoothWave, triangleWave, inv_sawWave, randWave };
 
 //==============================================================================
 /**
