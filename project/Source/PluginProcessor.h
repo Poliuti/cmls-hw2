@@ -23,7 +23,7 @@ public:
 
     void set_chosenWave(oscFunction val);
     oscFunction get_chosenWave(void);
-    
+
     void set_freqOsc(float val);
     float get_freqOsc(void);
     void set_sweepWidth(float val);
@@ -52,8 +52,8 @@ public:
     void changeProgramName(int index, const String& newName) override;
     void getStateInformation(MemoryBlock& destData) override;
     void setStateInformation(const void* data, int sizeInBytes) override;
-    
-    
+
+
 private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FlangerProcessor)
 
