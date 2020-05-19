@@ -100,17 +100,14 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
     for (int i = 0; i < numSamples; i++) {
         const float in = channelInData[i];
         
-        void flanging(float channel, float waveForm, )
+        //void flanging(float channel, float waveForm, )
+        
         // Recalculate the read pointer position with respect to
         // the write pointer.
         float currentDelayL = sweepWidth_now * waveForm(ph, chosenWave_now);
         // Subtract 3 samples to the delay pointer to make sure
         // we have enough previous samples to interpolate with
-<<<<<<< HEAD
-        float drL = fmodf((float)dw - (float)(currentDelayL * getSampleRate()) + (float)delayBufLength - 3.0, (float)delayBufLength);
-=======
         float drL = fmodf((float)dw - (float)(currentDelayL * getSampleRate()) + (float)delayBufLength - 4.0, (float)delayBufLength);
-         float drR = fmodf((float)dw - (float)(currentDelayR * getSampleRate()) + (float)delayBufLength - 4.0, (float)delayBufLength);
         // (N + K) % K == N % K
         // -3 % 10 = -3 (risultato di c++) // 7 (risultato matematico)
         //                     ↓
@@ -118,21 +115,24 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
         // [1   2  3  4  5  6  7  8  9 10] ← classi di equivalenza
         // [11 12 13 14 15 16 17 18 19 20]
 
->>>>>>> 14c805f... -4 samples sulla testina di lettura
         // Use linear interpolation to read a fractional index
         // into the buffer.
+        int nextSampleL = (int)floorf(drL);                                             // y[0]
+        int next_nextSampleL = (nextSampleL + 1) % delayBufLength;                      // y[1]
+        int previousSampleL = (nextSampleL - 1 + delayBufLength) % delayBufLength;      // y[-1]
         float fractionL = drL - floorf(drL);
-<<<<<<< HEAD
-        int previousSampleL = (int)floorf(drL);
-        int nextSampleL = (previousSampleL + 1) % delayBufLength;
-        float interpolatedSampleL = fractionL*delayL[nextSampleL] + (1.0f-fractionL)*delayL[previousSampleL];
-=======
         float c0L = delayL[nextSampleL];
         float c1L = (delayL[next_nextSampleL] - delayL[previousSampleL]) / 2;
         float c2L = (delayL[next_nextSampleL] - (2 * delayL[nextSampleL]) + delayL[previousSampleL]) / 2;
         float frac2L = fractionL * fractionL;
         float interpolatedSampleL = (c2L * frac2L) + (c1L * fractionL) + c0L;
         
+        delayL[dw] = in + (interpolatedSampleL * fb_now);
+
+        
+        float currentDelayR = sweepWidth_now * waveForm(ph + deltaPh_now, chosenWave_now);
+        float drR = fmodf((float)dw - (float)(currentDelayR * getSampleRate()) + (float)delayBufLength - 4.0, (float)delayBufLength);
+
         int nextSampleR = (int)floorf(drR);                                             // y[0]
         int next_nextSampleR = (nextSampleR + 1) % delayBufLength;                      // y[1]
         int previousSampleR = (nextSampleR - 1 + delayBufLength) % delayBufLength;      // y[-1]
@@ -143,6 +143,8 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
         float frac2R = fractionR * fractionR;
         float interpolatedSampleR = (c2R * frac2R) + (c1R * fractionR) + c0R;
         
+        delayR[dw] = in + (interpolatedSampleR * fb_now);
+
         // POLINOMIAL 3rd order INTERPOLATION
         // into the buffer.
         //int prev_previousSampleL = (int)floorf(drL)-1 % delayBufLength;     // x[n-1]
@@ -173,20 +175,11 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
 
         
         
->>>>>>> 14c805f... -4 samples sulla testina di lettura
         // Store the current information in the delay buffer.
         // With feedback, what we read is included in what gets
         // stored in the buffer, otherwise it’s just a simple
         // delay line of the input signal.
-        delayL[dw] = in + (interpolatedSampleL * fb_now);
         
-        float currentDelayR = sweepWidth_now * waveForm(ph + deltaPh_now, chosenWave_now);
-        float drR = fmodf((float)dw - (float)(currentDelayR * getSampleRate()) + (float)delayBufLength - 3.0, (float)delayBufLength);
-        float fractionR = drR - floorf(drR);
-        int previousSampleR = (int)floorf(drR);
-        int nextSampleR = (previousSampleR + 1) % delayBufLength;
-        float interpolatedSampleR = fractionR*delayR[nextSampleR] + (1.0f-fractionR)*delayR[previousSampleR];
-        delayR[dw] = in + (interpolatedSampleR * fb_now);
 
         
         
