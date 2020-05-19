@@ -8,6 +8,16 @@ struct UISliders {
     void (FlangerProcessor::*set_func)(float);
 };
 
+String wave_labels[10] = {
+    [0] = "-- Select --",
+    [OscFunction::sineWave]     = "Sinusoid",
+    [OscFunction::squareWave]   = "Square",
+    [OscFunction::sawtoothWave] = "Sawtooth",
+    [OscFunction::triangleWave] = "Triangle",
+    [OscFunction::inv_sawWave]  = "Inverted sawtooth",
+    [OscFunction::randWave]     = "Random",
+};
+
 //==============================================================================
 FlangerEditor::FlangerEditor(FlangerProcessor& p)
     : AudioProcessorEditor(&p), processor(p)
@@ -15,18 +25,18 @@ FlangerEditor::FlangerEditor(FlangerProcessor& p)
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
 
-    // Describe GUI
-    UISliders ui_elements[] = {
+    // --- Sliders ---
+    UISliders sliders[] = {
         {"LFO frequency", " Hz", {0.0, 10.0},  &FlangerProcessor::get_freqOsc,    &FlangerProcessor::set_freqOsc},
         {"Sweep width",   " s",  {0.0, 25e-3}, &FlangerProcessor::get_sweepWidth, &FlangerProcessor::set_sweepWidth},
         {"Depth",         " %",  {0.0, 1.0},   &FlangerProcessor::get_depth,      &FlangerProcessor::set_depth},
         {"Feedback",      " %",  {0.0, 1.0},   &FlangerProcessor::get_fb,         &FlangerProcessor::set_fb},
     };
 
-    for (UISliders item : ui_elements) {
+    for (UISliders item : sliders) {
+        std::cout << (processor.*(item.get_func))() << std::endl;
         Slider* s = new Slider();
         addAndMakeVisible(s);
-        sliders.add(s);
         s->setRange(item.range[0], item.range[1]);
         s->setValue((processor.*(item.get_func))());
         s->setTextValueSuffix(item.suffix);
@@ -38,15 +48,37 @@ FlangerEditor::FlangerEditor(FlangerProcessor& p)
         addAndMakeVisible(l);
         l->setText(item.label, dontSendNotification);
         l->attachToComponent(s, true);
+
+        uiElements.add(s);
     }
+
+    // --- Waveform selection ---
+    OscFunction shapes[] = {
+        OscFunction::sineWave,
+        OscFunction::squareWave,
+        OscFunction::sawtoothWave,
+        OscFunction::triangleWave,
+        OscFunction::inv_sawWave,
+        OscFunction::randWave,
+    };
+
+    ComboBox* wave_selector = new ComboBox();
+    addAndMakeVisible(wave_selector);
+    for (OscFunction shape : shapes) {
+        wave_selector->addItem(wave_labels[shape], shape);
+    }
+    wave_selector->setSelectedId(processor.get_chosenWave());
+    wave_selector->onChange = [this, wave_selector] { processor.set_chosenWave((OscFunction)wave_selector->getSelectedId()); };
+
+    uiElements.add(wave_selector);
 
     setSize(400, 300);
 }
 
 FlangerEditor::~FlangerEditor()
 {
-    for (Slider* s : sliders) {
-        delete s;
+    for (Component* c : uiElements) {
+        delete c; // TODO: are labels deleted?
     }
 }
 
@@ -69,8 +101,8 @@ void FlangerEditor::resized()
     flow.justifyContent = FlexBox::JustifyContent::center;
     flow.alignContent = FlexBox::AlignContent::center;
 
-    for (Slider* s : sliders) {
-        flow.items.add(FlexItem(*s).withFlex(1, 0, getHeight() / sliders.size()));
+    for (Component* s : uiElements) {
+        flow.items.add(FlexItem(*s).withMinWidth(getWidth()).withMinHeight((float)getHeight() / (uiElements.size() + 1)));
     }
 
     flow.performLayout(getLocalBounds().toFloat());
