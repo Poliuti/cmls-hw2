@@ -49,14 +49,14 @@ void FlangerProcessor::releaseResources()
     // spare memory, etc.
 }
 
-float FlangerProcessor::waveForm(float ph, oscFunction chosenWave)
+float FlangerProcessor::waveForm(float ph, OscFunction chosenWave)
 {
     switch(chosenWave)
  {
-    case sineWave:
+    case OscFunction::sineWave:
     return 0.5f + 0.5f * sinf(2.0 * M_PI * ph);
 
-    case squareWave:
+    case OscFunction::squareWave:
        float sqr;
          if(ph!=0)
              sqr = 0.5f + 0.5f * abs(sinf(2.0 * M_PI * ph))/sinf(2.0 * M_PI * ph);
@@ -64,19 +64,19 @@ float FlangerProcessor::waveForm(float ph, oscFunction chosenWave)
              sqr = 0.5f;
     return sqr;
 
-    case sawtoothWave:
+    case OscFunction::sawtoothWave:
     return 1 - (ph - floor(ph));
 
-    case triangleWave:
+    case OscFunction::triangleWave:
          float tri;
          if(ph - floor(ph) < 0.5) tri = 2*(ph - floor(ph));
          else tri = 2*(1-ph - floor(ph));
     return  tri;
 
-    case inv_sawWave:
+    case OscFunction::inv_sawWave:
     return ph - floor(ph);
 
-    case randWave:
+    case OscFunction::randWave:
        //srand ((unsigned int) (time(NULL)));
        if(ph - phtmp < 0) rnd = rand()%100;
     return rnd/100;
@@ -104,8 +104,8 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
 
     int numSamples = buffer.getNumSamples();
     int delayBufLength = dbuf.getNumSamples();
-    chosenWave = squareWave;
-    oscFunction chosenWave_now = chosenWave;
+    chosenWave = OscFunction::squareWave;
+    OscFunction chosenWave_now = chosenWave;
     float freqOsc_now = freqOsc;
     float sweepWidth_now = sweepWidth;
     float fb_now = fb;
@@ -176,12 +176,12 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
 }
 
 
-void FlangerProcessor::set_chosenWave(oscFunction val)
+void FlangerProcessor::set_chosenWave(OscFunction val)
 {
     chosenWave = val;
 }
 
-FlangerProcessor::oscFunction FlangerProcessor::get_chosenWave(void) {
+OscFunction FlangerProcessor::get_chosenWave(void) {
     return chosenWave;
 }
 

@@ -2,6 +2,8 @@
 
 #include <JuceHeader.h>
 
+enum class OscFunction { sineWave, squareWave, sawtoothWave, triangleWave, inv_sawWave, randWave };
+
 //==============================================================================
 /**
 */
@@ -18,11 +20,10 @@ public:
     void processBlock(AudioBuffer<float>&, MidiBuffer&) override; // AudioBuffer contiene sia input che output, processa l'audio
 
     // === OTHER MEMBERS =======================================================
-    enum oscFunction {sineWave, squareWave, sawtoothWave, triangleWave, inv_sawWave, randWave};
-    float waveForm(float phi, oscFunction waveform);
+    float waveForm(float phi, OscFunction waveform);
 
-    void set_chosenWave(oscFunction val);
-    oscFunction get_chosenWave(void);
+    void set_chosenWave(OscFunction val);
+    OscFunction get_chosenWave(void);
 
     void set_freqOsc(float val);
     float get_freqOsc(void);
@@ -62,7 +63,7 @@ private:
     int dwL, dwR; // writing head
     float ph, phR; // phase LFO
 
-    oscFunction chosenWave;
+    OscFunction chosenWave;
     float phtmp;
     float rnd;
     float deltaPh; // Frequency LFO
