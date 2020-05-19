@@ -17,7 +17,6 @@ void FlangerProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
     dbuf.clear();
     dw = 0;
     ph = 0;
-    phR = 0;
 }
 
 void FlangerProcessor::releaseResources()
@@ -42,16 +41,16 @@ float FlangerProcessor::waveForm(float ph, oscFunction chosenWave)
     return sqr;
     
     case sawtoothWave:
-    return 1 - (ph - floor(ph));
+    return 1 - (ph - floorf(ph));
          
     case triangleWave:
          float tri;
-         if(ph - floor(ph) < 0.5) tri = 2*(ph - floor(ph));
-         else tri = 2*(1-ph - floor(ph));
+         if(ph - floorf(ph) < 0.5) tri = 2*(ph - floorf(ph));
+         else tri = 2*(1-ph - floorf(ph));
     return  tri;
     
     case inv_sawWave:
-    return ph - floor(ph);
+    return ph - floorf(ph);
 
     case randWave:
        //srand ((unsigned int) (time(NULL)));
@@ -103,8 +102,7 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
         // Recalculate the read pointer position with respect to
         // the write pointer.
         float currentDelayL = sweepWidth_now * waveForm(ph, chosenWave_now);
-        phR = ph + deltaPh_now;
-        float currentDelayR = sweepWidth_now * waveForm(phR, chosenWave_now);
+        float currentDelayR = sweepWidth_now * waveForm(ph + deltaPh_now, chosenWave_now);
 
         // Subtract 3 samples to the delay pointer to make sure
         // we have enough previous samples to interpolate with
