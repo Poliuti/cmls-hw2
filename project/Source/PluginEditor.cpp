@@ -106,7 +106,7 @@ void FlangerEditor::resized()
 
     for (Component* c : uiElements) {
         // TODO: fix slider width not taking into account the label
-        flow.items.add(FlexItem(*c).withMinWidth(getWidth() - 120.0f).withFlex(1));
+        flow.items.add(FlexItem(*c).withMinWidth(getWidth() - 120.0f).withFlex(1).withMargin(FlexItem::Margin(0, 15, 10, 0)));
     }
 
     flow.performLayout(getLocalBounds().toFloat());
