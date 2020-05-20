@@ -1,10 +1,12 @@
-#include "PluginProcessor.h"
-#include "PluginEditor.h"
 
-#include <math.h>
+#define _USE_MATH_DEFINES
+#include <cmath>
 #include <cstdlib>
 #include <ctime>
 #include <string>
+
+#include "PluginProcessor.h"
+#include "PluginEditor.h"
 
 // === OUR CODE ================================================================
 
