@@ -225,29 +225,29 @@ float FlangerProcessor::get_freqOsc(void) {
 
 void FlangerProcessor::set_sweepWidth(float val)
 {
-    sweepWidth = val;
+    sweepWidth = val / 1000.0f;
 }
 
 float FlangerProcessor::get_sweepWidth(void) {
-    return sweepWidth;
+    return sweepWidth * 1000.0f;
 }
 
 void FlangerProcessor::set_depth(float val)
 {
-    depth = val;
+    depth = val / 100.0f;
 }
 
 float FlangerProcessor::get_depth(void) {
-    return depth;
+    return depth * 100.0f;
 }
 
 void FlangerProcessor::set_fb(float val)
 {
-    fb = val;
+    fb = val / 100.0f;
 }
 
 float FlangerProcessor::get_fb(void) {
-    return fb;
+    return fb * 100.0f;
 }
 
 
