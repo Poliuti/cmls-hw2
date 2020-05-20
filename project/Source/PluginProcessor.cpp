@@ -41,7 +41,7 @@ void FlangerProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
     dbuf.clear();
     dw = 0;
     ph = 0;
-    srand (time(NULL));
+    srand ((unsigned int)time(NULL));
 }
 
 void FlangerProcessor::releaseResources()
