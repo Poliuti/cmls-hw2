@@ -41,7 +41,7 @@ void FlangerProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
     dbuf.clear();
     dw = 0;
     ph = 0;
-    srand (time(NULL));
+    srand ((unsigned int) time(NULL));
 }
 
 void FlangerProcessor::releaseResources()
@@ -50,7 +50,7 @@ void FlangerProcessor::releaseResources()
     // spare memory, etc.
 }
 
-float FlangerProcessor::waveForm(float ph, OscFunction chosenWave)
+float FlangerProcessor::waveForm(float ph, OscFunction chosenWave, float deltaphi)
 {
     switch(chosenWave)
  {
@@ -79,8 +79,9 @@ float FlangerProcessor::waveForm(float ph, OscFunction chosenWave)
 
     case OscFunction::randWave:
        //srand ((unsigned int) (time(NULL)));
-       if(ph - phtmp < 0) rnd = rand()%100;
-    return rnd/100;
+         if(ph - phtmp < 0) {rnd = rand()%100;
+             deltarnd = rand()%100;}
+    return abs(rnd/100 - deltaphi*(deltarnd/100));
  }
 }
 
@@ -137,7 +138,7 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
         const float in = channelInData[i];
         // Recalculate the read pointer position with respect to
         // the write pointer.
-        float currentDelayL = sweepWidth_now * waveForm(ph, chosenWave_now);
+        float currentDelayL = sweepWidth_now * waveForm(ph, chosenWave_now, 0);
         // Subtract 4 samples to the delay pointer to make sure
         // we have enough previous samples to interpolate with
         float drL = fmodf((float)dw - (float)(currentDelayL * getSampleRate()) + (float)delayBufLength - 4.0, (float)delayBufLength);
@@ -151,7 +152,7 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
         delayL[dw] = in + (interpolatedSampleL * fb_now);
         channelOutDataL[i] = in + depth_now * interpolatedSampleL;
 
-        float currentDelayR = sweepWidth_now * waveForm(ph + deltaPh_now, chosenWave_now);
+        float currentDelayR = sweepWidth_now * waveForm(ph + deltaPh_now, chosenWave_now, deltaPh_now);
         float drR = fmodf((float)dw - (float)(currentDelayR * getSampleRate()) + (float)delayBufLength - 4.0, (float)delayBufLength);
         float interpolatedSampleR = interpolate(drR, delayBufLength, delayR);
         delayR[dw] = in + (interpolatedSampleR * fb_now);
