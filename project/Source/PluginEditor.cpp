@@ -26,53 +26,72 @@ FlangerEditor::FlangerEditor(FlangerProcessor& p)
     // editor's size to whatever you need it to be.
 
     // --- Waveform selection ---
-    OscFunction shapes[] = {
-        OscFunction::sineWave,
-        OscFunction::squareWave,
-        OscFunction::sawtoothWave,
-        OscFunction::triangleWave,
-        OscFunction::inv_sawWave,
-        OscFunction::randWave,
-    };
+    {
+        OscFunction shapes[] = {
+            OscFunction::sineWave,
+            OscFunction::squareWave,
+            OscFunction::sawtoothWave,
+            OscFunction::triangleWave,
+            OscFunction::inv_sawWave,
+            OscFunction::randWave,
+        };
 
-    ComboBox* wave_selector = new ComboBox();
-    addAndMakeVisible(wave_selector);
-    for (OscFunction shape : shapes) {
-        wave_selector->addItem(wave_labels[shape], shape);
+        ComboBox* wave_selector = new ComboBox();
+        addAndMakeVisible(wave_selector);
+        for (OscFunction shape : shapes) {
+            wave_selector->addItem(wave_labels[shape], shape);
+        }
+        wave_selector->setSelectedId(processor.get_chosenWave());
+        wave_selector->onChange = [this, wave_selector] { processor.set_chosenWave((OscFunction)wave_selector->getSelectedId()); };
+
+        Label* l = new Label("", "LFO shape");
+        addAndMakeVisible(l);
+        l->attachToComponent(wave_selector, true);
+
+        uiElements.add(wave_selector);
     }
-    wave_selector->setSelectedId(processor.get_chosenWave());
-    wave_selector->onChange = [this, wave_selector] { processor.set_chosenWave((OscFunction)wave_selector->getSelectedId()); };
-
-    Label* l = new Label("", "LFO shape");
-    addAndMakeVisible(l);
-    l->attachToComponent(wave_selector, true);
-
-    uiElements.add(wave_selector);
 
     // --- Sliders ---
-    UISliders sliders[] = {
-        {"LFO frequency", String::fromUTF8(" Hz"), {0.0, 10.0},  &FlangerProcessor::get_freqOsc,    &FlangerProcessor::set_freqOsc},
-        {"Phase R-L",     String::fromUTF8(" °"),  {0.0, 360.0}, &FlangerProcessor::get_deltaPh,    &FlangerProcessor::set_deltaPh},
-        {"Sweep width",   String::fromUTF8(" ms"), {0.0, 25.0},  &FlangerProcessor::get_sweepWidth, &FlangerProcessor::set_sweepWidth},
-        {"Depth",         String::fromUTF8(" %"),  {0.0, 100.0}, &FlangerProcessor::get_depth,      &FlangerProcessor::set_depth},
-        {"Feedback",      String::fromUTF8(" %"),  {0.0, 99.9},  &FlangerProcessor::get_fb,         &FlangerProcessor::set_fb},
-    };
+    {
+        UISliders sliders[] = {
+            {"LFO frequency", String::fromUTF8(" Hz"), {0.0, 10.0},  &FlangerProcessor::get_freqOsc,    &FlangerProcessor::set_freqOsc},
+            {"Phase R-L",     String::fromUTF8(" °"),  {0.0, 360.0}, &FlangerProcessor::get_deltaPh,    &FlangerProcessor::set_deltaPh},
+            {"Sweep width",   String::fromUTF8(" ms"), {0.0, 25.0},  &FlangerProcessor::get_sweepWidth, &FlangerProcessor::set_sweepWidth},
+            {"Depth",         String::fromUTF8(" %"),  {0.0, 100.0}, &FlangerProcessor::get_depth,      &FlangerProcessor::set_depth},
+            {"Feedback",      String::fromUTF8(" %"),  {0.0, 99.9},  &FlangerProcessor::get_fb,         &FlangerProcessor::set_fb},
+        };
 
-    for (UISliders item : sliders) {
-        Slider* s = new CustomSlider();
-        addAndMakeVisible(s);
-        s->setRange(item.range[0], item.range[1]);
-        s->setValue((processor.*(item.get_func))());
-        s->setTextValueSuffix(item.suffix);
-        s->setSliderStyle(Slider::SliderStyle::LinearHorizontal);
-        s->setTextBoxStyle(Slider::TextBoxRight, false, 80, 20);
-        s->onValueChange = [this, s, item] { (processor.*(item.set_func))(s->getValue()); };
+        for (UISliders item : sliders) {
+            Slider* s = new CustomSlider();
+            addAndMakeVisible(s);
+            s->setRange(item.range[0], item.range[1]);
+            s->setValue((processor.*(item.get_func))());
+            s->setTextValueSuffix(item.suffix);
+            s->setSliderStyle(Slider::SliderStyle::LinearHorizontal);
+            s->setTextBoxStyle(Slider::TextBoxRight, false, 80, 20);
+            s->onValueChange = [this, s, item] { (processor.*(item.set_func))(s->getValue()); };
 
-        Label* l = new Label("", item.label);
+            Label* l = new Label("", item.label);
+            addAndMakeVisible(l);
+            l->attachToComponent(s, true);
+
+            uiElements.add(s);
+        }
+
+    }
+
+    // -- Invert polarity ---
+    {
+        Button* b = new ToggleButton();
+        addAndMakeVisible(b);
+        b->setToggleState(processor.get_inverted(), dontSendNotification);
+        b->onStateChange = [this, b] { processor.set_inverted(b->getToggleState()); };
+
+        Label* l = new Label("", "Invert polarity");
         addAndMakeVisible(l);
-        l->attachToComponent(s, true);
+        l->attachToComponent(b, true);
 
-        uiElements.add(s);
+        uiElements.add(b);
     }
 
     setSize(400, 300);
