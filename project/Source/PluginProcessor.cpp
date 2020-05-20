@@ -62,8 +62,7 @@ void FlangerProcessor::releaseResources()
 
 float FlangerProcessor::waveForm(float ph, OscFunction chosenWave, float deltaphi)
 {
-    static int deltarnd;
-    static float rnd;
+    static float deltarnd, rnd, frozen_deltaphi;
 
     switch(chosenWave)
     {
@@ -71,7 +70,7 @@ float FlangerProcessor::waveForm(float ph, OscFunction chosenWave, float deltaph
             return 0.5f + 0.5f * sinf(2.0 * M_PI * ph);
 
         case OscFunction::squareWave:
-            return 0.5f + (ph == 0 ? 0 : 0.5f * abs(sinf(2.0 * M_PI * ph))/sinf(2.0 * M_PI * ph));
+            return 0.5f + (ph == 0 ? 0 : 0.5f * abs(sinf(2.0 * M_PI * ph)) / sinf(2.0 * M_PI * ph));
 
         case OscFunction::sawtoothWave:
             return 1 - (ph - floorf(ph));
@@ -82,23 +81,26 @@ float FlangerProcessor::waveForm(float ph, OscFunction chosenWave, float deltaph
         case OscFunction::triangleWave:
             float tri;
             if (ph - floorf(ph) < 0.5)
-                tri = 2*(ph - floorf(ph));
+                tri = 2 * (ph - floorf(ph));
             else
-                tri = 2*(1-ph - floorf(ph));
+                tri = 2 * (1-ph - floorf(ph));
             return tri;
 
         case OscFunction::randWave:
             //srand ((unsigned int) (time(NULL)));
-            if(ph - phtmp < 0) {
-                rnd = rand()%100;
-                deltarnd = rand()%100;
+            if (ph - phtmp < 0) {
+                frozen_deltaphi = deltaphi;
+                rnd = (float)rand() / RAND_MAX;
+                deltarnd = (float)rand() / RAND_MAX;
             }
-            return abs(rnd/100 - deltaphi*((float)deltarnd/100));
+            return abs(rnd - frozen_deltaphi * deltarnd);
     }
 }
 
 float FlangerProcessor::interpolate(float dr, int delayBufLength, float* delay)
 {
+    // POLYNOMIAL 2nd order INTERPOLATION
+
     int nextSample = (int)floorf(dr);                                             // y[0]
     int next_nextSample = (nextSample + 1) % delayBufLength;                      // y[1]
     int previousSample = (nextSample - 1 + delayBufLength) % delayBufLength;      // y[-1]
