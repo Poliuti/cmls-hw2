@@ -74,8 +74,7 @@ private:
     float ph; // phase LFO
 
     float phtmp;
-    float rnd;
-    
+
     OscFunction chosenWave;
     float deltaPh; // phase difference
     float freqOsc; // Frequency LFO

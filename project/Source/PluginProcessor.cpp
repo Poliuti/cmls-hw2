@@ -22,7 +22,7 @@ FlangerProcessor::FlangerProcessor()
 #endif
 {
     deltaPh = 0.0f;
-    freqOsc = 0.0f;  
+    freqOsc = 0.0f;
     sweepWidth = 0.0f;
     depth = 0.0f;
     fb = 0.0f;
@@ -43,10 +43,10 @@ void FlangerProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
     spec.sampleRate = sampleRate;
     spec.maximumBlockSize = samplesPerBlock;
     spec.numChannels = getTotalNumInputChannels();
-    
+
     highPassFilter.prepare(spec);
     highPassFilter.reset();
-    
+
     dbuf.setSize(getTotalNumOutputChannels(), (int)ceilf(sampleRate * 25e-3));
     dbuf.clear();
     dw = 0;
@@ -63,39 +63,38 @@ void FlangerProcessor::releaseResources()
 float FlangerProcessor::waveForm(float ph, OscFunction chosenWave, float deltaphi)
 {
     static int deltarnd;
+    static float rnd;
 
     switch(chosenWave)
- {
-    case OscFunction::sineWave:
-    return 0.5f + 0.5f * sinf(2.0 * M_PI * ph);
+    {
+        case OscFunction::sineWave:
+            return 0.5f + 0.5f * sinf(2.0 * M_PI * ph);
 
-    case OscFunction::squareWave:
-       float sqr;
-         if(ph!=0)
-             sqr = 0.5f + 0.5f * abs(sinf(2.0 * M_PI * ph))/sinf(2.0 * M_PI * ph);
-         else
-             sqr = 0.5f;
-    return sqr;
+        case OscFunction::squareWave:
+            return 0.5f + (ph == 0 ? 0 : 0.5f * abs(sinf(2.0 * M_PI * ph))/sinf(2.0 * M_PI * ph));
 
-    case OscFunction::sawtoothWave:
-    return 1 - (ph - floorf(ph));
+        case OscFunction::sawtoothWave:
+            return 1 - (ph - floorf(ph));
 
-    case OscFunction::inv_sawWave:
-    return ph - floorf(ph);
+        case OscFunction::inv_sawWave:
+            return ph - floorf(ph);
 
-    case OscFunction::triangleWave:
-         float tri;
-         if(ph - floorf(ph) < 0.5) tri = 2*(ph - floorf(ph));
-         else tri = 2*(1-ph - floorf(ph));
-    return  tri;
+        case OscFunction::triangleWave:
+            float tri;
+            if (ph - floorf(ph) < 0.5)
+                tri = 2*(ph - floorf(ph));
+            else
+                tri = 2*(1-ph - floorf(ph));
+            return tri;
 
-    case OscFunction::randWave:
-       //srand ((unsigned int) (time(NULL)));
-         if(ph - phtmp < 0) {rnd = rand()%100;
-             deltarnd = rand()%100;}
-    return abs(rnd/100 - deltaphi*((float)deltarnd/100));
-         
- }
+        case OscFunction::randWave:
+            //srand ((unsigned int) (time(NULL)));
+            if(ph - phtmp < 0) {
+                rnd = rand()%100;
+                deltarnd = rand()%100;
+            }
+            return abs(rnd/100 - deltaphi*((float)deltarnd/100));
+    }
 }
 
 float FlangerProcessor::interpolate(float dr, int delayBufLength, float* delay)
@@ -132,11 +131,11 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
     // this code if your algorithm always overwrites all the output channels.
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; i++)
         buffer.clear(i, 0, buffer.getNumSamples());
-        
+
     AudioBlock<float> block(buffer);
     updateFilter();
     highPassFilter.process(ProcessContextReplacing<float>(block));
-     
+
     // This is the place where you'd normally do the guts of your plugin's
     // audio processing...
 
