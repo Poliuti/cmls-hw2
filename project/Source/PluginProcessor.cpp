@@ -37,7 +37,7 @@ void FlangerProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
 
-    dbuf.setSize(getTotalNumOutputChannels(), 100000);
+    dbuf.setSize(getTotalNumOutputChannels(), (int)ceilf(sampleRate * 25e-3));
     dbuf.clear();
     dw = 0;
     ph = 0;
