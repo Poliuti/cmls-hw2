@@ -2,6 +2,8 @@
 
 #include <JuceHeader.h>
 
+enum OscFunction : int { sineWave = 1, squareWave, sawtoothWave, triangleWave, inv_sawWave, randWave };
+
 //==============================================================================
 /**
 */
@@ -18,12 +20,11 @@ public:
     void processBlock(AudioBuffer<float>&, MidiBuffer&) override; // AudioBuffer contiene sia input che output, processa l'audio
 
     // === OTHER MEMBERS =======================================================
-    enum oscFunction {sineWave, squareWave, sawtoothWave, triangleWave, inv_sawWave, randWave};
-    float waveForm(float phi, oscFunction waveform);
+    float waveForm(float phi, OscFunction waveform);
 
-    void set_chosenWave(oscFunction val);
-    oscFunction get_chosenWave(void);
-    
+    void set_chosenWave(OscFunction val);
+    OscFunction get_chosenWave(void);
+
     void set_freqOsc(float val);
     float get_freqOsc(void);
     void set_sweepWidth(float val);
@@ -52,8 +53,8 @@ public:
     void changeProgramName(int index, const String& newName) override;
     void getStateInformation(MemoryBlock& destData) override;
     void setStateInformation(const void* data, int sizeInBytes) override;
-    
-    
+
+
 private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FlangerProcessor)
 
@@ -62,7 +63,7 @@ private:
     int dw; // writing head
     float ph; // phase LFO
 
-    oscFunction chosenWave;
+    OscFunction chosenWave;
     float phtmp;
     float rnd;
     float deltaPh; // Frequency LFO

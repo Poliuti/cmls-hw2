@@ -15,14 +15,7 @@ public:
 private:
     FlangerProcessor& processor;
 
-    Slider freqOscSlider;
-    Label freqOscLabel;
-    Slider sweepWidthSlider;
-    Label sweepWidthLabel;
-    Slider depthSlider;
-    Label depthLabel;
-    Slider fbackSlider;
-    Label fbackLabel;
+    OwnedArray<Component> uiElements;
 
     // === JUCE GENERATED CODE =================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FlangerEditor)

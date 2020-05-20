@@ -1,6 +1,23 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+struct UISliders {
+    String label, suffix;
+    float range[2];
+    float (FlangerProcessor::*get_func)(void);
+    void (FlangerProcessor::*set_func)(float);
+};
+
+String wave_labels[10] = {
+    [0] = "-- Select --",
+    [OscFunction::sineWave]     = "Sinusoid",
+    [OscFunction::squareWave]   = "Square",
+    [OscFunction::sawtoothWave] = "Sawtooth",
+    [OscFunction::triangleWave] = "Triangle",
+    [OscFunction::inv_sawWave]  = "Inverted sawtooth",
+    [OscFunction::randWave]     = "Random",
+};
+
 //==============================================================================
 FlangerEditor::FlangerEditor(FlangerProcessor& p)
     : AudioProcessorEditor(&p), processor(p)
@@ -8,74 +25,85 @@ FlangerEditor::FlangerEditor(FlangerProcessor& p)
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
 
-    freqOscSlider.setRange(0.0, 10.0);
-    freqOscSlider.setValue(processor.get_freqOsc());
-    freqOscSlider.setTextBoxStyle(Slider::TextBoxRight, false, 100, 20);
-    freqOscSlider.onValueChange = [this] { processor.set_freqOsc(freqOscSlider.getValue()); };
-    freqOscLabel.setText("Frequency", dontSendNotification);
+    // --- Sliders ---
+    UISliders sliders[] = {
+        {"LFO frequency", " Hz", {0.0, 10.0},  &FlangerProcessor::get_freqOsc,    &FlangerProcessor::set_freqOsc},
+        {"Sweep width",   " s",  {0.0, 25e-3}, &FlangerProcessor::get_sweepWidth, &FlangerProcessor::set_sweepWidth},
+        {"Depth",         " %",  {0.0, 1.0},   &FlangerProcessor::get_depth,      &FlangerProcessor::set_depth},
+        {"Feedback",      " %",  {0.0, 1.0},   &FlangerProcessor::get_fb,         &FlangerProcessor::set_fb},
+    };
 
-    addAndMakeVisible(freqOscSlider);
-    addAndMakeVisible(freqOscLabel);
+    for (UISliders item : sliders) {
+        Slider* s = new Slider();
+        addAndMakeVisible(s);
+        s->setRange(item.range[0], item.range[1]);
+        s->setValue((processor.*(item.get_func))());
+        s->setTextValueSuffix(item.suffix);
+        s->setSliderStyle(Slider::SliderStyle::LinearHorizontal);
+        s->setTextBoxStyle(Slider::TextBoxRight, false, 100, 20); // cambiare numeri
+        s->onValueChange = [this, s, item] { (processor.*(item.set_func))(s->getValue()); };
 
-    sweepWidthSlider.setRange(0.0, 25e-3);
-    sweepWidthSlider.setValue(processor.get_sweepWidth());
-    sweepWidthSlider.setTextBoxStyle(Slider::TextBoxRight, false, 100, 20);
-    sweepWidthSlider.onValueChange = [this] { processor.set_sweepWidth(sweepWidthSlider.getValue()); };
-    sweepWidthLabel.setText("Sweep Width", dontSendNotification);
+        Label* l = new Label();
+        addAndMakeVisible(l);
+        l->setText(item.label, dontSendNotification);
+        l->attachToComponent(s, true);
 
-    addAndMakeVisible(sweepWidthSlider);
-    addAndMakeVisible(sweepWidthLabel);
+        uiElements.add(s);
+    }
 
-    depthSlider.setRange(0.0, 1.0);
-    depthSlider.setValue(processor.get_depth());
-    depthSlider.setTextBoxStyle(Slider::TextBoxRight, false, 100, 20);
-    depthSlider.onValueChange = [this] { processor.set_depth(depthSlider.getValue()); };
-    depthLabel.setText("Depth", dontSendNotification);
+    // --- Waveform selection ---
+    OscFunction shapes[] = {
+        OscFunction::sineWave,
+        OscFunction::squareWave,
+        OscFunction::sawtoothWave,
+        OscFunction::triangleWave,
+        OscFunction::inv_sawWave,
+        OscFunction::randWave,
+    };
 
-    addAndMakeVisible(depthSlider);
-    addAndMakeVisible(depthLabel);
+    ComboBox* wave_selector = new ComboBox();
+    addAndMakeVisible(wave_selector);
+    for (OscFunction shape : shapes) {
+        wave_selector->addItem(wave_labels[shape], shape);
+    }
+    wave_selector->setSelectedId(processor.get_chosenWave());
+    wave_selector->onChange = [this, wave_selector] { processor.set_chosenWave((OscFunction)wave_selector->getSelectedId()); };
 
-    fbackSlider.setRange(0.0, 1.0);
-    fbackSlider.setValue(processor.get_fb());
-    fbackSlider.setTextBoxStyle(Slider::TextBoxRight, false, 100, 20);
-    fbackSlider.onValueChange = [this] { processor.set_fb(fbackSlider.getValue()); };
-    fbackLabel.setText("Feedback", dontSendNotification);
-
-    addAndMakeVisible(fbackSlider);
-    addAndMakeVisible(fbackLabel);
+    uiElements.add(wave_selector);
 
     setSize(400, 300);
 }
 
 FlangerEditor::~FlangerEditor()
 {
+    for (Component* c : uiElements) {
+        delete c; // TODO: are labels deleted?
+    }
 }
 
 //==============================================================================
 void FlangerEditor::paint(Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId));
-
-    g.setColour (Colours::white);
-    g.setFont (15.0f);
-    g.drawFittedText ("Hello World!!", getLocalBounds(), Justification::centred, 1);
+    g.fillAll(getLookAndFeel().findColour (ResizableWindow::backgroundColourId));
+    g.setColour(Colours::white);
+    g.setFont(16.0f);
 }
 
 void FlangerEditor::resized()
 {
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
+    FlexBox flow;
+    flow.flexDirection = FlexBox::Direction::column;
+    flow.flexWrap = FlexBox::Wrap::wrap;
+    flow.justifyContent = FlexBox::JustifyContent::center;
+    flow.alignContent = FlexBox::AlignContent::center;
 
-    freqOscLabel.setBounds (10, 10, 90, 20);
-    freqOscSlider.setBounds (100, 10, getWidth() - 110, 20);
+    for (Component* s : uiElements) {
+        // TODO: fix slider width not taking into account the label
+        flow.items.add(FlexItem(*s).withMinWidth(getWidth() / 2).withMinHeight((float)getHeight() / (uiElements.size() + 1)));
+    }
 
-    sweepWidthLabel.setBounds (10, 50, 90, 20);
-    sweepWidthSlider.setBounds (100, 50, getWidth() - 110, 20);
-
-    depthLabel.setBounds (10, 90, 90, 20);
-    depthSlider.setBounds (100, 90, getWidth() - 110, 20);
-
-    fbackLabel.setBounds(10, 130, 90, 20);
-    fbackSlider.setBounds(100, 130, getWidth() - 110, 20);
+    flow.performLayout(getLocalBounds().toFloat());
 }
