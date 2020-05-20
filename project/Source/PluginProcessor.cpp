@@ -27,6 +27,7 @@ FlangerProcessor::FlangerProcessor()
     sweepWidth = 0.0f;
     depth = 0.0f;
     fb = 0.0f;
+    sign = +1;
     chosenWave = OscFunction::sineWave;
 }
 
@@ -125,7 +126,7 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
     OscFunction chosenWave_now = chosenWave;
     float freqOsc_now = freqOsc;
     float sweepWidth_now = sweepWidth;
-    float fb_now = fb;
+    float fb_now = sign * fb;
     float depth_now = depth;
     float deltaPh_now = deltaPh;
 
@@ -199,6 +200,13 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
     }
 }
 
+void FlangerProcessor::set_inverted(bool val) {
+    sign = val ? -1 : +1;
+}
+
+bool FlangerProcessor::get_inverted(void) {
+    return sign == -1;
+}
 
 void FlangerProcessor::set_deltaPh(float val) {
     deltaPh = val / 360.0f;
