@@ -20,6 +20,7 @@ FlangerProcessor::FlangerProcessor()
                        )
 #endif
 {
+    deltaPh = 0.0f;
     freqOsc = 0.0f;
     sweepWidth = 0.0f;
     depth = 0.0f;
@@ -124,7 +125,6 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
     float fb_now = fb;
     float depth_now = depth;
     float deltaPh_now = deltaPh;
-    deltaPh_now = 0.5;
 
     float* channelOutDataL = buffer.getWritePointer(0);
     float* channelOutDataR = buffer.getWritePointer(1);
@@ -196,6 +196,14 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
     }
 }
 
+
+void FlangerProcessor::set_deltaPh(float val) {
+    deltaPh = val / 360.0f;
+}
+
+float FlangerProcessor::get_deltaPh(void) {
+    return deltaPh * 360.0f;
+}
 
 void FlangerProcessor::set_chosenWave(OscFunction val)
 {

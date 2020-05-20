@@ -26,6 +26,8 @@ public:
     void set_chosenWave(OscFunction val);
     OscFunction get_chosenWave(void);
 
+    void set_deltaPh(float val);
+    float get_deltaPh(void);
     void set_freqOsc(float val);
     float get_freqOsc(void);
     void set_sweepWidth(float val);
@@ -64,11 +66,11 @@ private:
     int dw; // writing head
     float ph; // phase LFO
 
-    OscFunction chosenWave;
     float phtmp;
     float rnd;
-    float deltaPh; // Frequency LFO
 
+    OscFunction chosenWave;
+    float deltaPh; // phase difference
     float freqOsc; // Frequency LFO
     float sweepWidth; // Width LFO in samples (campioni di ritardo)
     float depth; // Depth Flanger (0 - 1)
