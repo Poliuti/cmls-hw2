@@ -35,18 +35,17 @@ FlangerEditor::FlangerEditor(FlangerProcessor& p)
     };
 
     for (UISliders item : sliders) {
-        Slider* s = new Slider();
+        Slider* s = new CustomSlider();
         addAndMakeVisible(s);
         s->setRange(item.range[0], item.range[1]);
         s->setValue((processor.*(item.get_func))());
         s->setTextValueSuffix(item.suffix);
         s->setSliderStyle(Slider::SliderStyle::LinearHorizontal);
-        s->setTextBoxStyle(Slider::TextBoxRight, false, 100, 20); // cambiare numeri
+        s->setTextBoxStyle(Slider::TextBoxRight, false, 80, 20);
         s->onValueChange = [this, s, item] { (processor.*(item.set_func))(s->getValue()); };
 
-        Label* l = new Label();
+        Label* l = new Label("", item.label);
         addAndMakeVisible(l);
-        l->setText(item.label, dontSendNotification);
         l->attachToComponent(s, true);
 
         uiElements.add(s);
@@ -69,6 +68,10 @@ FlangerEditor::FlangerEditor(FlangerProcessor& p)
     }
     wave_selector->setSelectedId(processor.get_chosenWave());
     wave_selector->onChange = [this, wave_selector] { processor.set_chosenWave((OscFunction)wave_selector->getSelectedId()); };
+
+    Label* l = new Label("", "LFO shape");
+    addAndMakeVisible(l);
+    l->attachToComponent(wave_selector, true);
 
     uiElements.add(wave_selector);
 
@@ -98,12 +101,12 @@ void FlangerEditor::resized()
     FlexBox flow;
     flow.flexDirection = FlexBox::Direction::column;
     flow.flexWrap = FlexBox::Wrap::wrap;
-    flow.justifyContent = FlexBox::JustifyContent::center;
-    flow.alignContent = FlexBox::AlignContent::center;
+    flow.justifyContent = FlexBox::JustifyContent::flexStart;
+    flow.alignContent = FlexBox::AlignContent::flexEnd;
 
-    for (Component* s : uiElements) {
+    for (Component* c : uiElements) {
         // TODO: fix slider width not taking into account the label
-        flow.items.add(FlexItem(*s).withMinWidth(getWidth() / 2).withMinHeight((float)getHeight() / (uiElements.size() + 1)));
+        flow.items.add(FlexItem(*c).withMinWidth(getWidth() - 120.0f).withFlex(1));
     }
 
     flow.performLayout(getLocalBounds().toFloat());
