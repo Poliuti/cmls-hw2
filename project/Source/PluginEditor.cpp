@@ -78,7 +78,7 @@ FlangerEditor::FlangerEditor(FlangerProcessor& p)
 FlangerEditor::~FlangerEditor()
 {
     for (Component* c : uiElements) {
-        delete c; // TODO: are labels deleted?
+       // delete c; // TODO: are labels deleted?
     }
 }
 
