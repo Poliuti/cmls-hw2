@@ -26,6 +26,9 @@ public:
     void set_chosenWave(OscFunction val);
     OscFunction get_chosenWave(void);
 
+    void set_inverted(bool val);
+    bool get_inverted(void);
+
     void set_deltaPh(float val);
     float get_deltaPh(void);
     void set_freqOsc(float val);
@@ -75,4 +78,5 @@ private:
     float sweepWidth; // Width LFO in samples (campioni di ritardo)
     float depth; // Depth Flanger (0 - 1)
     float fb; // feedback
+    int sign; // additive/subtractive
 };
