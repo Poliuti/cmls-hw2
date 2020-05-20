@@ -21,6 +21,7 @@ public:
 
     // === OTHER MEMBERS =======================================================
     float waveForm(float phi, OscFunction waveform);
+    float interpolate(float dr, int delayBufLength, float* delay);
 
     void set_chosenWave(OscFunction val);
     OscFunction get_chosenWave(void);
