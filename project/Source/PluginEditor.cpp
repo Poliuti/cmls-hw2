@@ -25,6 +25,30 @@ FlangerEditor::FlangerEditor(FlangerProcessor& p)
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
 
+    // --- Waveform selection ---
+    OscFunction shapes[] = {
+        OscFunction::sineWave,
+        OscFunction::squareWave,
+        OscFunction::sawtoothWave,
+        OscFunction::triangleWave,
+        OscFunction::inv_sawWave,
+        OscFunction::randWave,
+    };
+
+    ComboBox* wave_selector = new ComboBox();
+    addAndMakeVisible(wave_selector);
+    for (OscFunction shape : shapes) {
+        wave_selector->addItem(wave_labels[shape], shape);
+    }
+    wave_selector->setSelectedId(processor.get_chosenWave());
+    wave_selector->onChange = [this, wave_selector] { processor.set_chosenWave((OscFunction)wave_selector->getSelectedId()); };
+
+    Label* l = new Label("", "LFO shape");
+    addAndMakeVisible(l);
+    l->attachToComponent(wave_selector, true);
+
+    uiElements.add(wave_selector);
+
     // --- Sliders ---
     UISliders sliders[] = {
         {"LFO frequency", String::fromUTF8(" Hz"), {0.0, 10.0},  &FlangerProcessor::get_freqOsc,    &FlangerProcessor::set_freqOsc},
@@ -50,30 +74,6 @@ FlangerEditor::FlangerEditor(FlangerProcessor& p)
 
         uiElements.add(s);
     }
-
-    // --- Waveform selection ---
-    OscFunction shapes[] = {
-        OscFunction::sineWave,
-        OscFunction::squareWave,
-        OscFunction::sawtoothWave,
-        OscFunction::triangleWave,
-        OscFunction::inv_sawWave,
-        OscFunction::randWave,
-    };
-
-    ComboBox* wave_selector = new ComboBox();
-    addAndMakeVisible(wave_selector);
-    for (OscFunction shape : shapes) {
-        wave_selector->addItem(wave_labels[shape], shape);
-    }
-    wave_selector->setSelectedId(processor.get_chosenWave());
-    wave_selector->onChange = [this, wave_selector] { processor.set_chosenWave((OscFunction)wave_selector->getSelectedId()); };
-
-    Label* l = new Label("", "LFO shape");
-    addAndMakeVisible(l);
-    l->attachToComponent(wave_selector, true);
-
-    uiElements.add(wave_selector);
 
     setSize(400, 300);
 }
@@ -106,7 +106,7 @@ void FlangerEditor::resized()
 
     for (Component* c : uiElements) {
         // TODO: fix slider width not taking into account the label
-        flow.items.add(FlexItem(*c).withMinWidth(getWidth() - 120.0f).withFlex(1).withMargin(FlexItem::Margin(0, 15, 10, 0)));
+        flow.items.add(FlexItem(*c).withMinWidth(getWidth() - 120.0f).withFlex(1).withMargin(FlexItem::Margin(10, 15, 10, 15)));
     }
 
     flow.performLayout(getLocalBounds().toFloat());
