@@ -28,6 +28,7 @@ FlangerEditor::FlangerEditor(FlangerProcessor& p)
     // --- Sliders ---
     UISliders sliders[] = {
         {"LFO frequency", " Hz", {0.0, 10.0},  &FlangerProcessor::get_freqOsc,    &FlangerProcessor::set_freqOsc},
+        {"Phase R-L",     " °",  {0.0, 360.0}, &FlangerProcessor::get_deltaPh,    &FlangerProcessor::set_deltaPh},
         {"Sweep width",   " s",  {0.0, 25e-3}, &FlangerProcessor::get_sweepWidth, &FlangerProcessor::set_sweepWidth},
         {"Depth",         " %",  {0.0, 1.0},   &FlangerProcessor::get_depth,      &FlangerProcessor::set_depth},
         {"Feedback",      " %",  {0.0, 1.0},   &FlangerProcessor::get_fb,         &FlangerProcessor::set_fb},
