@@ -34,15 +34,14 @@ FlangerEditor::FlangerEditor(FlangerProcessor& p)
     };
 
     for (UISliders item : sliders) {
-        std::cout << (processor.*(item.get_func))() << std::endl;
         Slider* s = new Slider();
         addAndMakeVisible(s);
         s->setRange(item.range[0], item.range[1]);
         s->setValue((processor.*(item.get_func))());
         s->setTextValueSuffix(item.suffix);
         s->setSliderStyle(Slider::SliderStyle::LinearHorizontal);
-        //s->setTextBoxStyle(Slider::TextBoxRight, false, 100, 20); // cambiare numeri
-        s->onValueChange = [this, s, &item] { (processor.*(item.set_func))((float)s->getValue()); };
+        s->setTextBoxStyle(Slider::TextBoxRight, false, 100, 20); // cambiare numeri
+        s->onValueChange = [this, s, item] { (processor.*(item.set_func))(s->getValue()); };
 
         Label* l = new Label();
         addAndMakeVisible(l);
@@ -102,7 +101,8 @@ void FlangerEditor::resized()
     flow.alignContent = FlexBox::AlignContent::center;
 
     for (Component* s : uiElements) {
-        flow.items.add(FlexItem(*s).withMinWidth(getWidth()).withMinHeight((float)getHeight() / (uiElements.size() + 1)));
+        // TODO: fix slider width not taking into account the label
+        flow.items.add(FlexItem(*s).withMinWidth(getWidth() / 2).withMinHeight((float)getHeight() / (uiElements.size() + 1)));
     }
 
     flow.performLayout(getLocalBounds().toFloat());
