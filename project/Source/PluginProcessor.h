@@ -2,6 +2,8 @@
 
 #include <JuceHeader.h>
 
+using namespace dsp;
+
 enum OscFunction : int { sineWave = 1, squareWave, sawtoothWave, triangleWave, inv_sawWave, randWave };
 
 //==============================================================================
@@ -20,6 +22,7 @@ public:
     void processBlock(AudioBuffer<float>&, MidiBuffer&) override; // AudioBuffer contiene sia input che output, processa l'audio
 
     // === OTHER MEMBERS =======================================================
+    void updateFilter();
     float waveForm(float phi, OscFunction waveform, float deltaphi);
     float interpolate(float dr, int delayBufLength, float* delay);
 
@@ -65,13 +68,14 @@ private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FlangerProcessor)
 
     // === OUR PRIVATE MEMBERS =================================================
+    ProcessorDuplicator<IIR::Filter <float>, IIR::Coefficients <float> > highPassFilter;
     AudioSampleBuffer dbuf; // delay buffer
     int dw; // writing head
     float ph; // phase LFO
 
     float phtmp;
-    float rnd, deltarnd;
-
+    float rnd;
+    
     OscFunction chosenWave;
     float deltaPh; // phase difference
     float freqOsc; // Frequency LFO
