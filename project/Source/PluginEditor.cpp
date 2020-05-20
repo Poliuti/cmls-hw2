@@ -8,14 +8,13 @@ struct UISliders {
     void (FlangerProcessor::*set_func)(float);
 };
 
-String wave_labels[10] = {
-    [0] = "-- Select --",
-    [OscFunction::sineWave]     = "Sinusoid",
-    [OscFunction::squareWave]   = "Square",
-    [OscFunction::sawtoothWave] = "Sawtooth",
-    [OscFunction::triangleWave] = "Triangle",
-    [OscFunction::inv_sawWave]  = "Inverted sawtooth",
-    [OscFunction::randWave]     = "Random",
+std::map<int, String> wave_labels = {
+    {OscFunction::sineWave     , "Sinusoid"},
+    {OscFunction::squareWave   , "Square"},
+    {OscFunction::sawtoothWave , "Sawtooth"},
+    {OscFunction::triangleWave , "Triangle"},
+    {OscFunction::inv_sawWave  , "Inverted sawtooth"},
+    {OscFunction::randWave     , "Random"},
 };
 
 //==============================================================================
@@ -27,19 +26,10 @@ FlangerEditor::FlangerEditor(FlangerProcessor& p)
 
     // --- Waveform selection ---
     {
-        OscFunction shapes[] = {
-            OscFunction::sineWave,
-            OscFunction::squareWave,
-            OscFunction::sawtoothWave,
-            OscFunction::triangleWave,
-            OscFunction::inv_sawWave,
-            OscFunction::randWave,
-        };
-
         ComboBox* wave_selector = new ComboBox();
         addAndMakeVisible(wave_selector);
-        for (OscFunction shape : shapes) {
-            wave_selector->addItem(wave_labels[shape], shape);
+        for (auto& shape_and_label : wave_labels) {
+            wave_selector->addItem(shape_and_label.second, shape_and_label.first);
         }
         wave_selector->setSelectedId(processor.get_chosenWave());
         wave_selector->onChange = [this, wave_selector] { processor.set_chosenWave((OscFunction)wave_selector->getSelectedId()); };
