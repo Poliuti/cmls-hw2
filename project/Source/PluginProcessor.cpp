@@ -83,12 +83,12 @@ float FlangerProcessor::waveForm(float ph, OscFunction chosenWave, float deltaph
 
         case OscFunction::randWave:
             //srand ((unsigned int) (time(NULL)));
-            if (ph - phtmp < 0) {
+            if (ph < phtmp) {
                 frozen_deltaphi = deltaphi;
                 rnd = (float)rand() / RAND_MAX;
                 deltarnd = (float)rand() / RAND_MAX;
             }
-            return abs(rnd - frozen_deltaphi * deltarnd);
+            return abs(rnd - (deltaphi ? frozen_deltaphi : 0) * deltarnd);
     }
 }
 
