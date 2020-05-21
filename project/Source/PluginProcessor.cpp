@@ -103,7 +103,7 @@ float FlangerProcessor::interpolate(float dr, int delayBufLength, float* delay)
     float fraction = dr - floorf(dr);                                             // (t-n)
 
     
-    // LINEAR INTERPOLATION _ x(t)=(t-n)*x[n-1] + (n+1-t)*x[n]
+    // LINEAR INTERPOLATION _ x(t) = (t-n)*x[n-1] + (n+1-t)*x[n]
     /*
     int previousSample = (int)floorf(dr);                                         // x[n]
     int nextSample = (previousSample + 1) % delayBufLength;                       // x[n-1]
@@ -111,7 +111,7 @@ float FlangerProcessor::interpolate(float dr, int delayBufLength, float* delay)
     */
     
     
-    // POLYNOMIAL 2nd order INTERPOLATION _ x(t)= c2*(t-n)^2 + c1*(t-n) + c0
+    // POLYNOMIAL 2nd order INTERPOLATION _ x(t) = c2*(t-n)^2 + c1*(t-n) + c0
     int nextSample = (int)floorf(dr);                                             // x[n]
     int next_nextSample = (nextSample + 1) % delayBufLength;                      // x[n+1]
     int previousSample = (nextSample - 1 + delayBufLength) % delayBufLength;      // x[n-1]
@@ -122,7 +122,7 @@ float FlangerProcessor::interpolate(float dr, int delayBufLength, float* delay)
     float interpolatedSample = (c2 * frac2) + (c1 * fraction) + c0;
 
 
-    // POLINOMIAL 3rd order INTERPOLATION _ x(t)= c3*(t-n)^3 + c2*(t-n)^2 + c1*(t-n) + c0
+    // POLINOMIAL 3rd order INTERPOLATION _ x(t) = c3*(t-n)^3 + c2*(t-n)^2 + c1*(t-n) + c0
     /*
     int prev_previousSample = (int)floorf(dr)-1 % delayBufLength;                 // x[n-1]
     int previousSample = (int)floorf(dr);                                         // x[n]
