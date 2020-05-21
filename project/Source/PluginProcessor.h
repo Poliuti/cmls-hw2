@@ -32,6 +32,8 @@ public:
     void set_inverted(bool val);
     bool get_inverted(void);
 
+    void set_fc(float val);
+    float get_fc(void);
     void set_deltaPh(float val);
     float get_deltaPh(void);
     void set_freqOsc(float val);
@@ -84,5 +86,5 @@ private:
     float depth; // Depth Flanger (0 - 1)
     float fb; // feedback
     int sign; // additive/subtractive
-    float fc; // HP cut-off frequency
+    float alpha; // alpha for cut-off frequency
 };

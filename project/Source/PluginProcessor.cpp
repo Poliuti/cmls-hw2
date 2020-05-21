@@ -27,7 +27,7 @@ FlangerProcessor::FlangerProcessor()
     depth = 0.0f;
     fb = 0.0f;
     sign = +1;
-    fc = 20;
+    alpha = 1;
     chosenWave = OscFunction::sineWave;
 }
 
@@ -161,10 +161,11 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
     const float* channelInData = buffer.getReadPointer(0);
 
     for (int i = 0; i < numSamples; i++) {
+        const float in = channelInData[i];
         // HP filter
-        const float in = 0.5f * (yp + channelInData[i] - xp);
-        xp = channelInData[i]; // for next iteration
-        yp = in; // for next iteration
+        const float filt_in = alpha * (yp + in - xp);
+        xp = in; // for next iteration
+        yp = filt_in; // for next iteration
 
         // Recalculate the read pointer position with respect to
         // the write pointer.
@@ -179,13 +180,13 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
         // With feedback, what we read is included in what gets
         // stored in the buffer, otherwise it’s just a simple
         // delay line of the input signal.
-        delayL[dw] = in + (interpolatedSampleL * fb_now);
+        delayL[dw] = filt_in + (interpolatedSampleL * fb_now);
         channelOutDataL[i] = in + depth_now * interpolatedSampleL;
 
         float currentDelayR = sweepWidth_now * waveForm(ph + deltaPh_now, chosenWave_now, deltaPh_now);
         float drR = fmodf((float)dw - (float)(currentDelayR * getSampleRate()) + (float)delayBufLength - 4.0, (float)delayBufLength);
         float interpolatedSampleR = interpolate(drR, delayBufLength, delayR);
-        delayR[dw] = in + (interpolatedSampleR * fb_now);
+        delayR[dw] = filt_in + (interpolatedSampleR * fb_now);
         channelOutDataR[i] = in + depth_now * interpolatedSampleR;
 
         dw = (dw + 1) % delayBufLength;
@@ -225,6 +226,14 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
         float interpolatedSampleR = (c3R*frac3R) + (c2R*frac2R) + (c1R*fractionR) + c0R;
         */
     }
+}
+
+void FlangerProcessor::set_fc(float val) {
+    alpha = 1 / (2 * M_PI * (val/getSampleRate()) + 1);
+}
+
+float FlangerProcessor::get_fc(void) {
+    return getSampleRate() * (1 / alpha - 1) / (2 * M_PI);
 }
 
 void FlangerProcessor::set_inverted(bool val) {
