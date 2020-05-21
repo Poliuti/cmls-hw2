@@ -65,6 +65,20 @@ The wet lines are previously filtered by a high-pass filter (described in sectio
 	\label{fig:diag}
 \end{figure}
 
+\subsection{High-Pass Filter}\label{sec:hpf}
+
+With high values of feedback gain and depth, we can occur in the risk of saturation, in particular at low frequencies. In order to avoid that, we decided to add a high-pass filter before the wet signal line, by implementing a first-order recursive filter:
+\[
+y[n] = \alpha \cdot \left( y[n-1] + x[n] - x[n-1] \right)
+\qquad
+0 \le \alpha \le 1
+\]
+where $\alpha$ has the same role as the time-constant of an analog RC circuit.
+In particular, it is related to the cut-off frequency $f_c$ as:
+\[
+\alpha = \left( \frac{2 \pi f_c}{F_s} + 1 \right)^{-1}
+\]
+
 \subsection{Parameters}\label{sec:parameters}
 
 The flanger effect is given precisely by the mix of the dry signal and the wet one (in fact if only the signal with modulated delay were sent out, we would have a sort of simple frequency modulation that would lead to a vibrato effect). In short, mixing an audio signal with a slightly delayed copy of itself results in a different frequency spectrum due to the suppression of some wave components and the enhancement of others.
@@ -89,3 +103,6 @@ Besides the default ``sinusoidal'' wave, it is possible to set a ``square'', ``s
 This part, is implemented with a simple \texttt{switch} over a \texttt{OscFunction} enum in the member function \texttt{FlangerProcessor::waveForm()} in the \texttt{PluginProcessor.cpp} file.
 
 A final parameter is the \emph{LFO phase R/L}, ranging from 0 to 360°, which allows the user to modify phase displacement in case the wave function is not random. In the latter case, this parameter is replaced by \emph{LFO width}, which is a percentage representing how much the right channel should differ from the right one, by making a linear combination between the left-channel random value and another right-channel random value.
+
+\paragraph{Cut-off frequency}
+For the high-pass filter, the cut-off frequency is provided as a final user adjustable parameter, in a range from 20\,Hz to 5\,kHz. We observed that setting a higher frequency is not useful, as it would leave only the dry signal go through.

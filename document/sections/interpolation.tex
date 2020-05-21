@@ -1,4 +1,4 @@
-\section{Interpolation}
+\section{Interpolation}\label{sec:interpolation}
 
 Digital delay lines are implemented using a memory buffer of discrete audio samples. To change the delay time, we change the distance in the buffer between where samples are written and where they are read back.\cite{reiss2014audio}
 Separate read and write pointers are used and additionally, for good quality audio, it is necessary to interpolate the delay-line length rather than ``jumping'' between integer numbers of samples. This is typically accomplished using an interpolating read to make the delay line vary smoothly over time~\cite{smith2010physical}.
