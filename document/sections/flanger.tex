@@ -51,8 +51,5 @@ Another free parameter for the user is the value of the \textbf{feedback gain}. 
 As said before, the delay line is controlled by an LFO. We decided to set other degree of freedom for the user and we introduced some other user-adjustable parameters related to it. In particular \textbf{sweep width} is the value of the amplitude of the LFO expressed in terms of number of samples, in a range from  0 to 25. It is also possible to modify the \textbf{LFO frequency}, from 0 to 10 Hz. This parameter is useful to act on the speed of the read pointer. The plugin also provides the possibility to choose the type of wave. Besides the default sine wave, it is possible to set a square, saw tooth, inverse saw tooth, triangular and random waves. This part of code is implemented with a simple switch in FlangerProcessor::waveForm.
 We also add the possibility to change the polarity of the signal.
 
-With high values of feedback gain and depth, we can occur in the risk of saturation (giusto?) in particular at low frequencies. In order to avoid that, we added an high pass filter in input to the wet signal line, implemented with the following formula:
-
-
 
 
