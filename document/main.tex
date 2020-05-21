@@ -7,6 +7,7 @@
 \usepackage{hyperref}
 \usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage{mathtools}
 \usepackage{graphicx}
 \usepackage{float} % for "H" placement
 \usepackage{subcaption} % for subfigures and subtables
@@ -14,7 +15,7 @@
 \usepackage{gensymb} % for \degree
 \usepackage{xcolor}
 \usepackage{todonotes}
-\usepackage{mathtools}
+
 \DeclarePairedDelimiter\ceil{\lceil}{\rceil}
 \DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
 
@@ -36,10 +37,10 @@
 
 	\input{sections/intro} % introduzione generale sul problema
 	\input{sections/flanger}
-	\input{sections/gui} % interfaccia grafica
-	\input{sections/interpolation}
 	\input{sections/LFO}
+	\input{sections/interpolation}
 	\input{sections/hpf}
+	\input{sections/gui} % interfaccia grafica
 	
 	\bibliographystyle{plain}
 	\bibliography{bibliography}
