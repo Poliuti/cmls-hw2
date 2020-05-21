@@ -27,6 +27,7 @@ FlangerProcessor::FlangerProcessor()
     depth = 0.0f;
     fb = 0.0f;
     sign = +1;
+    alpha = 1;
     chosenWave = OscFunction::sineWave;
 }
 
@@ -43,6 +44,8 @@ void FlangerProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
     dbuf.clear();
     dw = 0;
     ph = 0;
+    xp = 0;
+    yp = 0;
     srand ((unsigned int)time(NULL));
 }
 
@@ -54,43 +57,44 @@ void FlangerProcessor::releaseResources()
 
 float FlangerProcessor::waveForm(float ph, OscFunction chosenWave, float deltaphi)
 {
+    static float deltarnd, rnd, frozen_deltaphi;
+
     switch(chosenWave)
- {
-    case OscFunction::sineWave:
-    return 0.5f + 0.5f * sinf(2.0 * M_PI * ph);
+    {
+        case OscFunction::sineWave:
+            return 0.5f + 0.5f * sinf(2.0 * M_PI * ph);
 
-    case OscFunction::squareWave:
-       float sqr;
-         if(ph!=0)
-             sqr = 0.5f + 0.5f * abs(sinf(2.0 * M_PI * ph))/sinf(2.0 * M_PI * ph);
-         else
-             sqr = 0.5f;
-    return sqr;
+        case OscFunction::squareWave:
+            return 0.5f + (ph == 0 ? 0 : 0.5f * abs(sinf(2.0 * M_PI * ph)) / sinf(2.0 * M_PI * ph));
 
-    case OscFunction::sawtoothWave:
-    return 1 - (ph - floorf(ph));
+        case OscFunction::sawtoothWave:
+            return 1 - (ph - floorf(ph));
 
-    case OscFunction::inv_sawWave:
-    return ph - floorf(ph);
+        case OscFunction::inv_sawWave:
+            return ph - floorf(ph);
 
-    case OscFunction::triangleWave:
-         float tri;
-         if(ph - floorf(ph) < 0.5) tri = 2*(ph - floorf(ph));
-         else tri = 2*(1-ph - floorf(ph));
-    return  tri;
+        case OscFunction::triangleWave:
+            float tri;
+            if (ph - floorf(ph) < 0.5)
+                tri = 2 * (ph - floorf(ph));
+            else
+                tri = 2 * (1-ph - floorf(ph));
+            return tri;
 
-    case OscFunction::randWave:
-       //srand ((unsigned int) (time(NULL)));
-         if(ph - phtmp < 0) {rnd = rand()%100;
-             deltarnd = rand()%100;}
-    return abs(rnd/100 - deltaphi*(deltarnd/100));
- }
+        case OscFunction::randWave:
+            //srand ((unsigned int) (time(NULL)));
+            if (ph - phtmp < 0) {
+                frozen_deltaphi = deltaphi;
+                rnd = (float)rand() / RAND_MAX;
+                deltarnd = (float)rand() / RAND_MAX;
+            }
+            return abs(rnd - frozen_deltaphi * deltarnd);
+    }
 }
 
 float FlangerProcessor::interpolate(float dr, int delayBufLength, float* delay)
 {
     // POLYNOMIAL 2nd order INTERPOLATION
-    
     int nextSample = (int)floorf(dr);                                             // y[0]
     int next_nextSample = (nextSample + 1) % delayBufLength;                      // y[1]
     int previousSample = (nextSample - 1 + delayBufLength) % delayBufLength;      // y[-1]
@@ -100,8 +104,8 @@ float FlangerProcessor::interpolate(float dr, int delayBufLength, float* delay)
     float c2 = (delay[next_nextSample] - (2 * delay[nextSample]) + delay[previousSample]) / 2;
     float frac2 = fraction * fraction;
     float interpolatedSample = (c2 * frac2) + (c1 * fraction) + c0;
-    
-    
+
+
     // POLINOMIAL 3rd order INTERPOLATION
     /*
     int prev_previousSample = (int)floorf(dr)-1 % delayBufLength;     // x[n-1]
@@ -117,7 +121,7 @@ float FlangerProcessor::interpolate(float dr, int delayBufLength, float* delay)
     float frac3 = frac2 * fraction;
     float interpolatedSample = (c3*frac3) + (c2*frac2) + (c1*fraction) + c0;
     */
-    
+
     return interpolatedSample;
 }
 
@@ -158,6 +162,11 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
 
     for (int i = 0; i < numSamples; i++) {
         const float in = channelInData[i];
+        // HP filter
+        const float filt_in = alpha * (yp + in - xp);
+        xp = in; // for next iteration
+        yp = filt_in; // for next iteration
+
         // Recalculate the read pointer position with respect to
         // the write pointer.
         float currentDelayL = sweepWidth_now * waveForm(ph, chosenWave_now, 0);
@@ -171,13 +180,13 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
         // With feedback, what we read is included in what gets
         // stored in the buffer, otherwise it’s just a simple
         // delay line of the input signal.
-        delayL[dw] = in + (interpolatedSampleL * fb_now);
+        delayL[dw] = filt_in + (interpolatedSampleL * fb_now);
         channelOutDataL[i] = in + depth_now * interpolatedSampleL;
 
         float currentDelayR = sweepWidth_now * waveForm(ph + deltaPh_now, chosenWave_now, deltaPh_now);
         float drR = fmodf((float)dw - (float)(currentDelayR * getSampleRate()) + (float)delayBufLength - 4.0, (float)delayBufLength);
         float interpolatedSampleR = interpolate(drR, delayBufLength, delayR);
-        delayR[dw] = in + (interpolatedSampleR * fb_now);
+        delayR[dw] = filt_in + (interpolatedSampleR * fb_now);
         channelOutDataR[i] = in + depth_now * interpolatedSampleR;
 
         dw = (dw + 1) % delayBufLength;
@@ -186,6 +195,14 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
         ph += freqOsc_now / getSampleRate();
         if (ph >= 1.0) ph -= 1.0;
     }
+}
+
+void FlangerProcessor::set_fc(float val) {
+    alpha = 1 / (2 * M_PI * (val/getSampleRate()) + 1);
+}
+
+float FlangerProcessor::get_fc(void) {
+    return getSampleRate() * (1 / alpha - 1) / (2 * M_PI);
 }
 
 void FlangerProcessor::set_inverted(bool val) {

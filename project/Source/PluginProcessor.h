@@ -29,6 +29,8 @@ public:
     void set_inverted(bool val);
     bool get_inverted(void);
 
+    void set_fc(float val);
+    float get_fc(void);
     void set_deltaPh(float val);
     float get_deltaPh(void);
     void set_freqOsc(float val);
@@ -68,9 +70,10 @@ private:
     AudioSampleBuffer dbuf; // delay buffer
     int dw; // writing head
     float ph; // phase LFO
+    float xp; // x[n-1] per HPF
+    float yp; // y[n-1] per HPF
 
     float phtmp;
-    float rnd, deltarnd;
 
     OscFunction chosenWave;
     float deltaPh; // phase difference
@@ -79,4 +82,5 @@ private:
     float depth; // Depth Flanger (0 - 1)
     float fb; // feedback
     int sign; // additive/subtractive
+    float alpha; // alpha for cut-off frequency
 };
