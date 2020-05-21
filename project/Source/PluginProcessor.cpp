@@ -18,7 +18,7 @@ FlangerProcessor::FlangerProcessor()
                       #endif
                        .withOutput ("Output", AudioChannelSet::stereo(), true)
                      #endif
-                       ), highPassFilter(IIR::Coefficients<float>::makeHighPass(44100, 15000.0f))
+                       )
 #endif
 {
     deltaPh = 0.0f;
@@ -39,14 +39,6 @@ void FlangerProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
-
-    ProcessSpec spec;
-    spec.sampleRate = sampleRate;
-    spec.maximumBlockSize = samplesPerBlock;
-    spec.numChannels = getTotalNumInputChannels();
-
-    highPassFilter.prepare(spec);
-    highPassFilter.reset();
 
     dbuf.setSize(getTotalNumOutputChannels(), (int)ceilf(sampleRate * 25e-3));
     dbuf.clear();
@@ -116,11 +108,6 @@ float FlangerProcessor::interpolate(float dr, int delayBufLength, float* delay)
     return interpolatedSample;
 }
 
-void FlangerProcessor::updateFilter()
-{
-    *highPassFilter.state = *IIR::Coefficients<float>::makeHighPass(getSampleRate(), 16000.0f);
-}
-
 void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
     ScopedNoDenormals noDenormals;
@@ -136,10 +123,6 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
     // this code if your algorithm always overwrites all the output channels.
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; i++)
         buffer.clear(i, 0, buffer.getNumSamples());
-
-    AudioBlock<float> block(buffer);
-    updateFilter();
-    highPassFilter.process(ProcessContextReplacing<float>(block));
 
     // This is the place where you'd normally do the guts of your plugin's
     // audio processing...

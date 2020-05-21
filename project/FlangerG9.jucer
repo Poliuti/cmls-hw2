@@ -35,7 +35,6 @@
         <MODULEPATH id="juce_gui_basics" path="../../.local/JUCE/modules"/>
         <MODULEPATH id="juce_gui_extra" path="../../.local/JUCE/modules"/>
         <MODULEPATH id="juce_opengl" path="../../.local/JUCE/modules"/>
-        <MODULEPATH id="juce_dsp" path="../../../../../Applications/JUCE/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
     <VS2019 targetFolder="Builds/VisualStudio2019">
@@ -58,7 +57,6 @@
         <MODULEPATH id="juce_gui_basics" path="../../.local/JUCE/modules"/>
         <MODULEPATH id="juce_gui_extra" path="../../.local/JUCE/modules"/>
         <MODULEPATH id="juce_opengl" path="../../.local/JUCE/modules"/>
-        <MODULEPATH id="juce_dsp" path="../../../../../Applications/JUCE/modules"/>
       </MODULEPATHS>
     </VS2019>
     <VS2017 targetFolder="Builds/VisualStudio2017">
@@ -81,7 +79,6 @@
         <MODULEPATH id="juce_gui_basics" path="../../.local/JUCE/modules"/>
         <MODULEPATH id="juce_gui_extra" path="../../.local/JUCE/modules"/>
         <MODULEPATH id="juce_opengl" path="../../.local/JUCE/modules"/>
-        <MODULEPATH id="juce_dsp" path="../../../../../Applications/JUCE/modules"/>
       </MODULEPATHS>
     </VS2017>
     <VS2015 targetFolder="Builds/VisualStudio2015">
@@ -104,7 +101,6 @@
         <MODULEPATH id="juce_gui_basics" path="../../.local/JUCE/modules"/>
         <MODULEPATH id="juce_gui_extra" path="../../.local/JUCE/modules"/>
         <MODULEPATH id="juce_opengl" path="../../.local/JUCE/modules"/>
-        <MODULEPATH id="juce_dsp" path="../../../../../Applications/JUCE/modules"/>
       </MODULEPATHS>
     </VS2015>
     <LINUX_MAKE targetFolder="Builds/LinuxMakefile">
@@ -127,7 +123,6 @@
         <MODULEPATH id="juce_gui_basics" path="../../.local/JUCE/modules"/>
         <MODULEPATH id="juce_gui_extra" path="../../.local/JUCE/modules"/>
         <MODULEPATH id="juce_opengl" path="../../.local/JUCE/modules"/>
-        <MODULEPATH id="juce_dsp" path="../../../../../Applications/JUCE/modules"/>
       </MODULEPATHS>
     </LINUX_MAKE>
     <CLION targetFolder="Builds/CLion">
@@ -146,7 +141,6 @@
         <MODULEPATH id="juce_gui_basics" path="../../.local/JUCE/modules"/>
         <MODULEPATH id="juce_gui_extra" path="../../.local/JUCE/modules"/>
         <MODULEPATH id="juce_opengl" path="../../.local/JUCE/modules"/>
-        <MODULEPATH id="juce_dsp" path="../../../../../Applications/JUCE/modules"/>
       </MODULEPATHS>
     </CLION>
   </EXPORTFORMATS>
@@ -161,7 +155,6 @@
     <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_cryptography" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
-    <MODULE id="juce_dsp" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
@@ -171,6 +164,7 @@
   <LIVE_SETTINGS>
     <LINUX/>
     <OSX/>
+    <WINDOWS/>
   </LIVE_SETTINGS>
   <JUCEOPTIONS JUCE_VST3_CAN_REPLACE_VST2="0" JUCE_STRICT_REFCOUNTEDPOINTER="1"/>
 </JUCERPROJECT>
