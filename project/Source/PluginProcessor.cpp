@@ -219,6 +219,14 @@ bool FlangerProcessor::get_inverted(void) {
     return sign == -1;
 }
 
+void FlangerProcessor::set_width(float val) {
+    deltaPh = val / 100.0f;
+}
+
+float FlangerProcessor::get_width(void) {
+    return deltaPh * 100.0f;
+}
+
 void FlangerProcessor::set_deltaPh(float val) {
     deltaPh = val / 360.0f;
 }
