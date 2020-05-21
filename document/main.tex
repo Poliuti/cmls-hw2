@@ -6,8 +6,15 @@
 \usepackage[T1]{fontenc}
 \usepackage{hyperref}
 \usepackage{amsmath}
-\usepackage{graphics}
-\usepackage{float}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{float} % for "H" placement
+\usepackage{subcaption} % for subfigures and subtables
+\usepackage{booktabs} % enhancement for tables
+\usepackage{gensymb} % for \degree
+\usepackage{xcolor}
+\usepackage{todonotes}
+
 
 \title{CMLS Homework 2 - Group 9}
 %\author{
@@ -22,6 +29,8 @@
 \begin{document}
 
 	\maketitle
+	{\footnotesize\hfill\url{https://github.com/mttbernardini/cmls-hw2}}
+
 	\input{sections/intro} % introduzione generale sul problema
 	\input{sections/flanger}
 	\input{sections/gui} % interfaccia grafica
