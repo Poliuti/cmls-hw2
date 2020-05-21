@@ -6,3 +6,10 @@
 *.out
 *.synctex*
 *.fdb_latexmk
+
+# ignore bibliography intermediate files
+*.blg
+*.bbl
+
+# but track pdfs inside assets/
+!assets/*.pdf

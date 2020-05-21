@@ -19,6 +19,7 @@ private:
     FlangerProcessor& processor;
 
     OwnedArray<Component> uiElements;
+    std::map<String, OwnedArray<Slider>> sliderGroups;
 
     // === JUCE GENERATED CODE =================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FlangerEditor)

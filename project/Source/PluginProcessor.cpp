@@ -22,6 +22,7 @@ FlangerProcessor::FlangerProcessor()
 #endif
 {
     deltaPh = 0.0f;
+    width = 0.0f;
     freqOsc = 0.0f;
     sweepWidth = 0.0f;
     depth = 0.0f;
@@ -46,6 +47,7 @@ void FlangerProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
     ph = 0;
     xp = 0;
     yp = 0;
+    prev_ph = 1;
     srand ((unsigned int)time(NULL));
 }
 
@@ -55,9 +57,11 @@ void FlangerProcessor::releaseResources()
     // spare memory, etc.
 }
 
-float FlangerProcessor::waveForm(float ph, OscFunction chosenWave, float deltaphi)
+float FlangerProcessor::waveForm(OscFunction chosenWave, float ph, float deltaphi, float w)
 {
-    static float rndL, rndR, frozen_deltaphi;
+    static float rndL, rndR, frozen_w;
+
+    ph = ph + deltaphi; // integrate phase shift in general
 
     switch(chosenWave)
     {
@@ -82,19 +86,20 @@ float FlangerProcessor::waveForm(float ph, OscFunction chosenWave, float deltaph
             return tri;
 
         case OscFunction::randWave:
-            // if ph is rewind to 0
-            if (ph - deltaphi < phtmp) {
-                if (deltaphi == 0) {
+            ph = ph - deltaphi; // not using deltaphi in this case
+            // if ph is rewind to 0 or went past 0.5
+            if (roundf(ph) != roundf(prev_ph)) {
+                if (w == 0) {
                     // left channel
                     rndL = (float)rand() / RAND_MAX;
                 } else {
                     // right channel
-                    frozen_deltaphi = deltaphi;
+                    frozen_w = w;
                     rndR = (float)rand() / RAND_MAX;
                 }
             }
-            deltaphi = (deltaphi ? frozen_deltaphi : 0); // rewrite deltaphi with frozen version
-            return (1 - deltaphi) * rndL + (deltaphi) * rndR;
+            w = (w ? frozen_w : 0); // rewrite w with frozen version
+            return (1 - w) * rndL + (w) * rndR; // linear combination
     }
 }
 
@@ -167,6 +172,7 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
     float fb_now = sign * fb;
     float depth_now = depth;
     float deltaPh_now = deltaPh;
+    float width_now = width;
 
     float* channelOutDataL = buffer.getWritePointer(0);
     float* channelOutDataR = buffer.getWritePointer(1);
@@ -184,7 +190,7 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
 
         // Recalculate the read pointer position with respect to
         // the write pointer.
-        float currentDelayL = sweepWidth_now * waveForm(ph, chosenWave_now, 0);
+        float currentDelayL = sweepWidth_now * waveForm(chosenWave_now, ph, 0, 0);
         // Subtract 4 samples to the delay pointer to make sure
         // we have enough previous samples to interpolate with
         float drL = fmodf((float)dw - (float)(currentDelayL * getSampleRate()) + (float)delayBufLength - 4.0, (float)delayBufLength);
@@ -198,17 +204,18 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
         delayL[dw] = filt_in + (interpolatedSampleL * fb_now);
         channelOutDataL[i] = in + depth_now * interpolatedSampleL;
 
-        float currentDelayR = sweepWidth_now * waveForm(ph + deltaPh_now, chosenWave_now, deltaPh_now);
+        float currentDelayR = sweepWidth_now * waveForm(chosenWave_now, ph, deltaPh_now, width_now);
         float drR = fmodf((float)dw - (float)(currentDelayR * getSampleRate()) + (float)delayBufLength - 4.0, (float)delayBufLength);
         float interpolatedSampleR = interpolate(drR, delayBufLength, delayR);
         delayR[dw] = filt_in + (interpolatedSampleR * fb_now);
         channelOutDataR[i] = in + depth_now * interpolatedSampleR;
 
         dw = (dw + 1) % delayBufLength;
-        // Update the LFO phase, keeping it in the range 0-1
-        phtmp = ph; //per l'onda random
+
+        prev_ph = ph;
         ph += freqOsc_now / getSampleRate();
-        if (ph >= 1.0) ph -= 1.0;
+        if (ph >= 1.0)
+            ph -= 1.0;
     }
 }
 
@@ -229,11 +236,11 @@ bool FlangerProcessor::get_inverted(void) {
 }
 
 void FlangerProcessor::set_width(float val) {
-    deltaPh = val / 100.0f;
+    width = val / 100.0f;
 }
 
 float FlangerProcessor::get_width(void) {
-    return deltaPh * 100.0f;
+    return width * 100.0f;
 }
 
 void FlangerProcessor::set_deltaPh(float val) {
