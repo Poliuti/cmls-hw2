@@ -31,6 +31,8 @@ public:
 
     void set_fc(float val);
     float get_fc(void);
+    void set_width(float val);
+    float get_width(void);
     void set_deltaPh(float val);
     float get_deltaPh(void);
     void set_freqOsc(float val);
