@@ -20,7 +20,7 @@ public:
     void processBlock(AudioBuffer<float>&, MidiBuffer&) override; // AudioBuffer contiene sia input che output, processa l'audio
 
     // === OTHER MEMBERS =======================================================
-    float waveForm(float phi, OscFunction waveform, float deltaphi);
+    float waveForm(OscFunction waveform, float ph, float deltaphi, float width);
     float interpolate(float dr, int delayBufLength, float* delay);
 
     void set_chosenWave(OscFunction val);
@@ -74,8 +74,7 @@ private:
     float ph; // phase LFO
     float xp; // x[n-1] per HPF
     float yp; // y[n-1] per HPF
-
-    float phtmp;
+    float prev_ph; // per random wave
 
     OscFunction chosenWave;
     float deltaPh; // phase difference
