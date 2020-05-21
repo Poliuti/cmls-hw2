@@ -82,11 +82,16 @@ float FlangerProcessor::waveForm(float ph, OscFunction chosenWave, float deltaph
             return tri;
 
         case OscFunction::randWave:
-            //srand ((unsigned int) (time(NULL)));
-            if (ph < phtmp) {
-                frozen_deltaphi = deltaphi;
-                rndL = (float)rand() / RAND_MAX;
-                rndR = (float)rand() / RAND_MAX;
+            // if ph is rewind to 0
+            if (ph - deltaphi < phtmp) {
+                if (deltaphi == 0) {
+                    // left channel
+                    rndL = (float)rand() / RAND_MAX;
+                } else {
+                    // right channel
+                    frozen_deltaphi = deltaphi;
+                    rndR = (float)rand() / RAND_MAX;
+                }
             }
             deltaphi = (deltaphi ? frozen_deltaphi : 0); // rewrite deltaphi with frozen version
             return (1 - deltaphi) * rndL + (deltaphi) * rndR;
