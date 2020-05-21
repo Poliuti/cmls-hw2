@@ -79,6 +79,7 @@ private:
 
     OscFunction chosenWave;
     float deltaPh; // phase difference
+    float width; // random wave width
     float freqOsc; // Frequency LFO
     float sweepWidth; // Width LFO in samples (campioni di ritardo)
     float depth; // Depth Flanger (0 - 1)
