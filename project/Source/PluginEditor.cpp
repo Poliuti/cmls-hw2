@@ -44,12 +44,12 @@ FlangerEditor::FlangerEditor(FlangerProcessor& p)
     // --- Sliders ---
     {
         UISliders sliders[] = {
-            {"LFO frequency", String::fromUTF8(" Hz"), {0.0, 10.0},     &FlangerProcessor::get_freqOsc,    &FlangerProcessor::set_freqOsc},
-            {"Phase R-L",     String::fromUTF8(" °"),  {0.0, 360.0},    &FlangerProcessor::get_deltaPh,    &FlangerProcessor::set_deltaPh},
-            {"Sweep width",   String::fromUTF8(" ms"), {0.0, 25.0},     &FlangerProcessor::get_sweepWidth, &FlangerProcessor::set_sweepWidth},
-            {"Depth",         String::fromUTF8(" %"),  {0.0, 100.0},    &FlangerProcessor::get_depth,      &FlangerProcessor::set_depth},
-            {"Feedback",      String::fromUTF8(" %"),  {0.0, 99.9},     &FlangerProcessor::get_fb,         &FlangerProcessor::set_fb},
-            {"HP cut-off",    String::fromUTF8(" Hz"), {20.0, 20000.0}, &FlangerProcessor::get_fc,         &FlangerProcessor::set_fc},
+            {"LFO frequency", String::fromUTF8(" Hz"), {0.0,  10.0},    &FlangerProcessor::get_freqOsc,    &FlangerProcessor::set_freqOsc},
+            {"Phase R-L",     String::fromUTF8(" °"),  {0.0,  360.0},   &FlangerProcessor::get_deltaPh,    &FlangerProcessor::set_deltaPh},
+            {"Sweep width",   String::fromUTF8(" ms"), {0.0,  25.0},    &FlangerProcessor::get_sweepWidth, &FlangerProcessor::set_sweepWidth},
+            {"Depth",         String::fromUTF8(" %"),  {0.0,  100.0},   &FlangerProcessor::get_depth,      &FlangerProcessor::set_depth},
+            {"Feedback",      String::fromUTF8(" %"),  {0.0,  99.0},    &FlangerProcessor::get_fb,         &FlangerProcessor::set_fb},
+            {"HP cut-off",    String::fromUTF8(" Hz"), {20.0, 5000.0},  &FlangerProcessor::get_fc,         &FlangerProcessor::set_fc},
         };
 
         for (UISliders item : sliders) {
