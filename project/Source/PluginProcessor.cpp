@@ -107,15 +107,15 @@ float FlangerProcessor::interpolate(float dr, int delayBufLength, float* delay)
 {
     float fraction = dr - floorf(dr);                                             // (t-n)
 
-    
+
     // LINEAR INTERPOLATION _ x(t) = (t-n)*x[n-1] + (n+1-t)*x[n]
     /*
     int previousSample = (int)floorf(dr);                                         // x[n]
     int nextSample = (previousSample + 1) % delayBufLength;                       // x[n-1]
     float interpolatedSample = fraction*delay[nextSample] + (1.0f-fraction)*delay[previousSample];
     */
-    
-    
+
+
     // POLYNOMIAL 2nd order INTERPOLATION _ x(t) = c2*(t-n)^2 + c1*(t-n) + c0
     int nextSample = (int)floorf(dr);                                             // x[n]
     int next_nextSample = (nextSample + 1) % delayBufLength;                      // x[n+1]
@@ -169,8 +169,8 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
     OscFunction chosenWave_now = chosenWave;
     float freqOsc_now = freqOsc;
     float sweepWidth_now = sweepWidth;
-    float fb_now = sign * fb;
-    float depth_now = depth;
+    float fb_now = fb;
+    float depth_now = sign * depth;
     float deltaPh_now = deltaPh;
     float width_now = width;
 
