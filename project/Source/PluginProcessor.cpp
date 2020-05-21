@@ -27,6 +27,7 @@ FlangerProcessor::FlangerProcessor()
     depth = 0.0f;
     fb = 0.0f;
     sign = +1;
+    fc = 20;
     chosenWave = OscFunction::sineWave;
 }
 
@@ -51,6 +52,8 @@ void FlangerProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
     dbuf.clear();
     dw = 0;
     ph = 0;
+    xp = 0;
+    yp = 0;
     srand ((unsigned int)time(NULL));
 }
 
@@ -158,7 +161,11 @@ void FlangerProcessor::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi
     const float* channelInData = buffer.getReadPointer(0);
 
     for (int i = 0; i < numSamples; i++) {
-        const float in = channelInData[i];
+        // HP filter
+        const float in = 0.5f * (yp + channelInData[i] - xp);
+        xp = channelInData[i]; // for next iteration
+        yp = in; // for next iteration
+
         // Recalculate the read pointer position with respect to
         // the write pointer.
         float currentDelayL = sweepWidth_now * waveForm(ph, chosenWave_now, 0);

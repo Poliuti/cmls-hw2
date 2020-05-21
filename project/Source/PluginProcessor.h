@@ -72,6 +72,8 @@ private:
     AudioSampleBuffer dbuf; // delay buffer
     int dw; // writing head
     float ph; // phase LFO
+    float xp; // x[n-1] per HPF
+    float yp; // y[n-1] per HPF
 
     float phtmp;
 
@@ -82,4 +84,5 @@ private:
     float depth; // Depth Flanger (0 - 1)
     float fb; // feedback
     int sign; // additive/subtractive
+    float fc; // HP cut-off frequency
 };
