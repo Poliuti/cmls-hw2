@@ -57,7 +57,7 @@ void FlangerProcessor::releaseResources()
 
 float FlangerProcessor::waveForm(float ph, OscFunction chosenWave, float deltaphi)
 {
-    static float deltarnd, rnd, frozen_deltaphi;
+    static float rndL, rndR, frozen_deltaphi;
 
     switch(chosenWave)
     {
@@ -85,10 +85,11 @@ float FlangerProcessor::waveForm(float ph, OscFunction chosenWave, float deltaph
             //srand ((unsigned int) (time(NULL)));
             if (ph < phtmp) {
                 frozen_deltaphi = deltaphi;
-                rnd = (float)rand() / RAND_MAX;
-                deltarnd = (float)rand() / RAND_MAX;
+                rndL = (float)rand() / RAND_MAX;
+                rndR = (float)rand() / RAND_MAX;
             }
-            return abs(rnd - (deltaphi ? frozen_deltaphi : 0) * deltarnd);
+            deltaphi = (deltaphi ? frozen_deltaphi : 0); // rewrite deltaphi with frozen version
+            return (1 - deltaphi) * rndL + (deltaphi) * rndR;
     }
 }
 
