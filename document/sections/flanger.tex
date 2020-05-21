@@ -27,7 +27,15 @@ where $p = 0, 1, 2, ..., M-1$ and
 \omega_n = \frac{(2n+1) \pi}{M},
 \]
 where $n = 0, 1, 2, ..., M-1$. Now, it is easy to see the dependence between frequencies enhanced and delay times of the flanger. 
+\begin{figure}
+	\centering
+	\includegraphics[width=0.5\linewidth]{assets/comb.png}
+	\caption{Frequency response of a flanger.}
+	\label{fig:comb}
+\end{figure}
 
+The flanger is stable until $g_{FB} < 1$. 
+Our plug-in provides the feature to invert the polarity of the $g_{FF}$ parameter. In this case, peaks and notches in the frequency response will trade places and the first notch lies now at $DC$ frequency. Because of it, switching to the negative polarity you can hear a thinner sound unless $M$ is large.
 
 In order to reproduce the analog effect of the flanger given by the heads of the tape machine, a delay line with a read and a writ pointer must be implemented. In the code we define them as two float variables dr and dw. The read index moves away from, then back to the top or starting point of the delay. When the read pointer and the write one are superimposed there is no delay, while when they are moving with respect to each other there is a change of pitch. This concept approaches the Doppler effect. As can be seen from the graph, the flanger effect is given precisely by the mix of the dry signal and the wet one(in fact if only the signal with modulated delay were sent out, we would have a sort of simple frequency modulation that would lead to a vibrato effect ). In short, mixing an audio signal with a slightly delayed copy of itself results in a different frequency spectrum due to the suppression of some wave components and the enhancement of others.\par
 So the mixing ratio between the two signals is a fundamental aspect of this type of effect. The control of the \textbf{depth} value, expressed in percentage,is used to decide the amount of wet signal to mix to the dry one. In particular 0\% corresponds to g=0 and produces no effects, while 100\% guarantees the maximum effect.\\
