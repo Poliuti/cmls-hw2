@@ -1,1 +1,28 @@
 \section{Flanger}
+A clear comprehension of the flanger from a perceptive point of view  is highlighted by the frequency response of the comb filter. 
+At the heart of the algorithm, comb filter is the simplest example of recursive delay network.
+In fact, flanger is a recursive comb filter with interpolating and time-varying delay line. Changes in delay time correspond to the characteristic way peaks in the frequency response move up and down in frequency\cite{puckette2006theory}.
+
+Comb filter is obtained feeding a $g_{FB}$ fraction of the output back to the input as we can see looking at (figura) its typical difference equation:
+
+\[
+	y[n] = g_{FB} y[n - M(n)] + x[n] + (g_{FF} - g_{FB}) x[n - M[n]],
+\]
+where $g_{FF}$ is the \textit{depth} of the flanger and $M[n]$ is a function describing variable delay times. In the case of interest it is represented by a Low Frequency Oscillator of different and selectable waveforms. Thus, the frequency response of the flanger is equal to 
+\[
+       \frac{Y[z]}{X[z]} = \frac{1 + z^{-M[n]} (g_{FF} - g_{FB})} {1 - z^{-M[n]}  g_{FB} }
+\]
+
+and looking at the absolute value of the frequency response of the non-recirculating comb filter with $g_{FB} = 0$ 
+\[
+    |H(z)| = \sqrt{ 1 + 2g_{FF} cos(\omega M[n]) + g_{FF}^1}
+\]
+ we can appreciate the classical spectrum with peaks and notches lying respectively in 
+\[
+       \omega_p = \frac{2 \pi p}{M},
+\]
+where $p = 0, 1, 2, ..., M-1$ and 
+\[
+       \omega_n = \frac{(2n+1) \pi}{M},
+\]
+where $n = 0, 1, 2, ..., M-1$. Now, it is easy to see the dependence between frequencies enhanced and delay times of the flanger. 
