@@ -1,4 +1,4 @@
-\section{Interface}
+\section{Interface}\label{sec:gui}
 
 User interaction is accomplished through a simple Graphical User Interface, providing the most of the controls as sliders.
 The upper area controls the LFO parameters (see section~\ref{sec:boh}). In figure~\ref{fig:gui-lfo} we can notice how the controls are always relevant to the selected waveform, i.e. for the ``random wave'' the ``phase'' slider is replaced with a ``width'' slider (see section~\ref{sec:boh} for more details on LFO parameters).
@@ -34,7 +34,9 @@ The full GUI as it is presented to the user is shown in figure~\ref{fig:gui-all}
 	\label{fig:gui-all}
 \end{figure}
 
-\subsection{Implementation Details}
+\subsection{Implementation Details}\label{sec:gui-implementation}
+
+\nocite{juce}
 
 In order to avoid code duplication, we adopted some techniques to define the GUI using a more descriptive approach rather than an imperative approach.
 
@@ -44,6 +46,6 @@ The initial \texttt{ComboBox} is populated by iterating over a \texttt{std::map}
 Each \texttt{Component} is then added to an \texttt{Array}, which is iterated over during the \texttt{resized()} method, and laid down using a vertical main-axis \texttt{FlexBox}, to prevent hard-coding numerical values for bounds and sizes. For the styling we just kept JUCE's default \texttt{LookAndFeel}, being already clear enough for this purpose.
 
 Value changes are bound using lambda-functions, instead of subclassing \texttt{Listener}, for easier coding.
-In particular, the logic of alternating the display between the two ``phase'' and ``width'' \texttt{Slider}s is accomplished by keeping a map of ``mutually exclusive'' \texttt{Component}s. The right \texttt{Slider} is then displayed when the \texttt{ComboBox.onChange} lambda-function is invoked.
+In particular, the logic of alternating the display between the two ``phase'' and ``width'' \texttt{Slider}s is accomplished by keeping a map of ``mutually exclusive'' \texttt{Component}s. The correct \texttt{Slider} is then displayed when the \texttt{ComboBox.onChange} lambda-function is invoked.
 
-Value unit conversion is finally performed by \texttt{FlangerProcessor}'s setter/getter methods of each parameter.
+Value unit conversion is finally performed by \texttt{FlangerProcessor}'s setter/getter methods of each parameter, following the encapsulation pattern to bridge between UI and internal representations.
