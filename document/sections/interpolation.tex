@@ -21,31 +21,33 @@ It works by effectively drawing a straight line between two neighboring samples 
 
 This is given in the following equation:
 \[
- x(t) = (n + 1 - t)x[n] + (t-n)x[n+1], 				n \leq t< n + 1
+ x(t) = (n + 1 - t)x[n] + (t-n)x[n+1] \qquad n \leq t< n + 1
 \]
-where $x[n]$ and $x[n+1]$ are two successive  samples and $ (t-n) $ is a fractional value which is the difference between the reader pointer and the largest integer that is not greater than the reader pointer.
+where $x[n]$ and $x[n+1]$ are two successive  samples and $ (t-n) $ is a fractional value which is the difference between the reader pointer $dr$ and the largest integer that is not greater than the reader pointer $\floor{dr}$.
 
 \paragraph{Polynomial Interpolation}
 In a polynomial interpolation the function is estimated to be an Nth-order polynomial. A curve is drawn between the points (or a series of points), and then the interpolated value is found on that curve.~\cite{pirkle2013designing}
 
 \[
- x(t) = c_{N}t^{N} + c_{N–1}t^{N–1} + ... c_{1}t^{1} + c_{0}, 				n \leq t< n + 1
+ x(t) = c_{N}t^{N} + c_{N–1}t^{N–1} + ... c_{1}t^{1} + c_{0} \qquad n \leq t< n + 1
  \]
 
 In particular, second-order polynomial interpolation considers three successive samples surrounding the interpolated location: $x[n-1]$, $x[n]$, and $x[n+1]$. 
 
 \[
-x(t) = c_{2}(t-n)^{2} + c_{1}(t-n) + c_{0}
+x(t) = c_{2}(t-n)^{2} + c_{1}(t-n) + c_{0} \qquad n - 1 < t < n + 1
 \]
 
 \[
 c_{0} = x[n]
 \]
+
 \[
-c_{1} = (x[n+1] - x[n-1])/2
+c_{1} = \frac{x[n+1] - x[n-1]}{2}
 \]
+
 \[
-c_{2} = (x[n+1] - 2x[n] + x[n-1])/2
+c_{2} = \frac{x[n+1] - 2x[n] + x[n-1]}{2}
 \]
 
 
