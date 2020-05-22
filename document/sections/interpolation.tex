@@ -1,6 +1,6 @@
 \section{Interpolation}\label{sec:interpolation}
 
-Digital delay lines are implemented using a memory buffer of discrete audio samples. To change the delay time, we change the distance in the buffer between where samples are written and where they are read back.\cite{reiss2014audio}
+Digital delay lines are implemented using a memory buffer of discrete audio samples. To change the delay time, we change the distance in the buffer between where samples are written and where they are read back~\cite{reiss2014audio}.
 Separate read and write pointers are used and additionally, for good quality audio, it is necessary to interpolate the delay-line length rather than ``jumping'' between integer numbers of samples. This is typically accomplished using an interpolating read to make the delay line vary smoothly over time~\cite{smith2010physical}.
 Since the delay of the flanger changes by small amounts each sample, it will inevitably take fractional values, so interpolation is always used when calculating the delayed signal of the flanger.
 
@@ -44,5 +44,3 @@ In particular, second-order polynomial interpolation considers three successive 
 		c_{2} = \frac{x[n+1] - 2 x[n] + x[n-1]}{2} 
 	\end{dcases}
 \]
-
-

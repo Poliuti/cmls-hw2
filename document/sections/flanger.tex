@@ -1,5 +1,4 @@
-\section{Flanger}
-\label{sec:flanger}
+\section{Flanger}\label{sec:flanger}
 
 Flanging is an audio effect produced by mixing two identical signals together, where one signal is delayed by a small and gradually changing period.
 It gets its name from the original analog method of running two tape machines slightly out of sync in respect to each other.
@@ -53,10 +52,10 @@ Our plug-in provides the feature to invert the polarity of the $g_{FF}$ paramete
 
 \subsection{Implementation}\label{sec:implementation}
 
-In order to reproduce the analog effect of the flanger given by the heads of the tape machine, a delay line with a read and a write pointer must be implemented. In the code we defined them as two variables $dr$ and $dw$. The read index moves away from, then back to, the top or starting point of the delay. When the read pointer and the write one are superimposed there is no delay, while when they are moving in respect to each other there is a change of pitch. Looking at the algorithm, a loop over all samples is implemented to calculate, for each iteration, the distance between the two pointers and store the delay length into a buffer. More details can be seen in the comments of the code.
+In order to reproduce the analog effect of the flanger given by the heads of the tape machine, a delay line with a read and a write pointer must be implemented. In the code we defined them as two variables $dr$ and $dw$. The read index moves away from, then back to, the top or starting point of the delay. When the read pointer and the write one are superimposed there is no delay, while when they are moving in respect to each other there is a change of pitch. Looking at the algorithm, a loop over all samples is implemented to calculate, for each iteration, the distance between the two pointers and store the delay length into a buffer. More details can be found in the comments of the \texttt{FlangerProcessor::processBlock()} member function in the \texttt{PluginProcessor.cpp} file.
 
-As can be seen from the block diagram in figure~\ref{fig:diag}, our plug-in has a mono input that is duplicated and in a stereo output.
-The wet lines are previously filtered by a high-pass filter (described in section~\ref{sec:hpf}) and then sent to the delay blocks. They are controlled by two distinct LFOs for each channel, with an adjustable relative phase to spread the stereo image. At the end, the wet and the dry lines are summed up to provide the two outputs $y_L[n]$ and $y_R[n]$. 
+As can be seen from the block diagram in figure~\ref{fig:diag}, our plug-in has a mono input that is duplicated in a stereo output.
+The wet lines are initially filtered by a high-pass filter (described in section~\ref{sec:hpf}) and then sent to the delay blocks. They are controlled by two distinct LFOs for each channel, with an adjustable relative phase to spread the stereo image. At the end, the wet and the dry lines are summed up to provide the two outputs $y_L[n]$ and $y_R[n]$.
 
 \begin{figure}
 	\centering
@@ -67,7 +66,7 @@ The wet lines are previously filtered by a high-pass filter (described in sectio
 
 \subsection{High-Pass Filter}\label{sec:hpf}
 
-With high values of feedback gain and depth, we can occur in the risk of saturation, in particular at low frequencies. In order to avoid that, we decided to add a high-pass filter before the wet signal line, by implementing a first-order recursive filter:
+With high values of feedback gain and depth, we can occur in the risk of saturation, in particular at low frequencies. In order to avoid that, we decided to add a high-pass filter before the delay lines, by implementing a first-order recursive filter:
 \[
 y[n] = \alpha \cdot \left( y[n-1] + x[n] - x[n-1] \right)
 \qquad
@@ -81,7 +80,7 @@ In particular, it is related to the cut-off frequency $f_c$ as:
 
 \subsection{Parameters}\label{sec:parameters}
 
-The flanger effect is given precisely by the mix of the dry signal and the wet one (in fact if only the signal with modulated delay were sent out, we would have a sort of simple frequency modulation that would lead to a vibrato effect). In short, mixing an audio signal with a slightly delayed copy of itself results in a different frequency spectrum due to the suppression of some wave components and the enhancement of others.
+The flanging effect is created by mixing the dry signal and the wet one (in fact if only the signals with modulated delays were sent out, we would have a sort of simple frequency modulation that would lead to a vibrato effect). In short, mixing an audio signal with a slightly delayed copy of itself results in a different frequency spectrum due to the suppression of some wave components and the enhancement of others.
 
 \paragraph{Depth}
 The mixing ratio between the two signals is a fundamental aspect of this type of effect. The control of the \emph{depth} value, expressed in percentage, is used to decide the amount of wet signal to mix to the dry one. In particular 0\% corresponds to $g_{FF} = 0$ and produces no effects, while 100\% guarantees the maximum effect.
@@ -94,7 +93,7 @@ We decided to set the range of this parameter from 0 to 99\% to remain in a stab
 \paragraph{Low Frequency Oscillators}
 As said before, each delay line is controlled by an LFO.
 We decided to set another degree of freedom for the user and we introduced some other user-adjustable parameters related to it.
-In particular \emph{sweep width} is the value of the amplitude of the LFO expressed in milliseconds, in a range from 0 to 25\,ms.
+In particular \emph{sweep width} is the value of its amplitude, expressed in milliseconds, in a range from 0 to 25\,ms.
 It is also possible to modify the \emph{LFO frequency}, from 0 to 10\,Hz.
 This parameter is useful to act on the speed of the read pointer.
 

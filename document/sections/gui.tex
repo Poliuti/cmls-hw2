@@ -46,6 +46,6 @@ The initial \texttt{ComboBox} is populated by iterating over a \texttt{std::map}
 Each \texttt{Component} is then added to an \texttt{Array}, which is iterated over during the \texttt{resized()} method, and laid down using a vertical main-axis \texttt{FlexBox}, to prevent hard-coding numerical values for bounds and sizes. For the styling we just kept JUCE's default \texttt{LookAndFeel}, being already clear enough for this purpose.
 
 Value changes are bound using lambda-functions, instead of subclassing \texttt{Listener}, for easier coding.
-In particular, the logic of alternating the display between the two ``phase'' and ``width'' \texttt{Slider}s is accomplished by keeping a map of ``mutually exclusive'' \texttt{Component}s. The correct \texttt{Slider} is then displayed when the \texttt{ComboBox.onChange} lambda-function is invoked.
+In particular, the logic of alternating the display between the two ``phase'' and ``width'' \texttt{Slider}s is accomplished by keeping a map of ``mutually exclusive'' \texttt{Component}s. The correct \texttt{Slider} is then displayed when the \texttt{ComboBox::onChange} lambda-function is invoked.
 
 Value unit conversion is finally performed by \texttt{FlangerProcessor}'s setter/getter methods of each parameter, following the encapsulation pattern to bridge between UI and internal representations.

@@ -1,6 +1,6 @@
 \section{Introduction}
 
-The aim of this document is to describe the realization of a flanger effect plug-in with feedback. For the implementation we relied on JUCE, a partially open-source cross-platform \texttt{C++} application framework.
+The aim of this document is to describe the realization of a flanger effect plug-in with feedback. For the implementation we relied on JUCE~\cite{juce}, a partially open-source cross-platform \texttt{C++} application framework.
 
 Section~\ref{sec:flanger} contains a detailed description of the algorithm of our digital flanger, starting from a simple delay line to a stereo flanger with identical settings except the phase of the low-frequency oscillator.
 Section~\ref{sec:interpolation} contains a detailed discussion on different interpolation techniques, used to handle fractional delay times in a discrete domain.
