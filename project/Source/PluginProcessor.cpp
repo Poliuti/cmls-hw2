@@ -117,26 +117,26 @@ float FlangerProcessor::interpolate(float dr, int delayBufLength, float* delay)
 
 
     // POLYNOMIAL 2nd order INTERPOLATION _ x(t) = c2*(t-n)^2 + c1*(t-n) + c0
-    int nextSample = (int)floorf(dr);                                             // x[n]
-    int next_nextSample = (nextSample + 1) % delayBufLength;                      // x[n+1]
-    int previousSample = (nextSample - 1 + delayBufLength) % delayBufLength;      // x[n-1]
-    float c0 = delay[nextSample];
-    float c1 = (delay[next_nextSample] - delay[previousSample]) / 2;
-    float c2 = (delay[next_nextSample] - (2 * delay[nextSample]) + delay[previousSample]) / 2;
+    int previousSample = (int)floorf(dr);                                                   // x[n]
+    int nextSample = (previousSample + 1) % delayBufLength;                                 // x[n+1]
+    int pre_previousSample = (previousSample - 1 + delayBufLength) % delayBufLength;        // x[n-1]
+    float c0 = delay[previousSample];
+    float c1 = (delay[nextSample] - delay[pre_previousSample]) / 2;
+    float c2 = (delay[nextSample] - (2 * delay[previousSample]) + delay[pre_previousSample]) / 2;
     float frac2 = fraction * fraction;
     float interpolatedSample = (c2 * frac2) + (c1 * fraction) + c0;
 
 
     // POLINOMIAL 3rd order INTERPOLATION _ x(t) = c3*(t-n)^3 + c2*(t-n)^2 + c1*(t-n) + c0
     /*
-    int prev_previousSample = (int)floorf(dr)-1 % delayBufLength;                 // x[n-1]
-    int previousSample = (int)floorf(dr);                                         // x[n]
-    int nextSample = (previousSample + 1) % delayBufLength;                       // x[n+1]
-    int next_nextSample = (previousSample + 2) % delayBufLength;                  // x[n+2]
+    int pre_previousSample = (int)floorf(dr)-1 % delayBufLength;                            // x[n-1]
+    int previousSample = (int)floorf(dr);                                                   // x[n]
+    int nextSample = (previousSample + 1) % delayBufLength;                                 // x[n+1]
+    int next_nextSample = (previousSample + 2) % delayBufLength;                            // x[n+2]
     float c0 = delay[previousSample];
-    float c1 = delay[nextSample] - delay[prev_previousSample];
-    float c2 = delay[prev_previousSample] - delay[previousSample] - 1;  //a0=???
-    float c3 = -delay[prev_previousSample] + delay[previousSample] - delay[nextSample] + delay[next_nextSample];
+    float c1 = delay[nextSample] - delay[pre_previousSample];
+    float c2 = delay[pre_previousSample] - delay[previousSample] - 1;  //a0=???
+    float c3 = -delay[pre_previousSample] + delay[previousSample] - delay[nextSample] + delay[next_nextSample];
     float frac2 = fraction * fraction;
     float frac3 = frac2 * fraction;
     float interpolatedSample = (c3*frac3) + (c2*frac2) + (c1*fraction) + c0;
