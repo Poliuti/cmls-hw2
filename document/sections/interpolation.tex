@@ -20,7 +20,7 @@ It works by effectively drawing a straight line between two neighboring samples 
 
 This is given in the following equation:
 \[
-	x(t) = (1 - (t - n)) \cdot x[n] + (t-n) \cdot x[n+1] \qquad n \leq t < n + 1
+	x(t) = (1 - (t - n)) \cdot x[n] + (t-n) \cdot x[n+1] \qquad n \le t < n + 1
 \]
 where $x[n]$ and $x[n+1]$ are two successive samples and $(t-n)$ is a fractional value representing the difference between the reader pointer $dr$ and its floor rounding $\floor{dr}$.
 
@@ -28,13 +28,13 @@ where $x[n]$ and $x[n+1]$ are two successive samples and $(t-n)$ is a fractional
 In a polynomial interpolation the function is estimated to be an Nth-order polynomial. A curve is drawn between the points (or a series of points), and then the interpolated value is found on that curve~\cite{pirkle2013designing}.
 
 \[
-	x(t) = c_{N}t^{N} + c_{N-1}t^{N-1} + \dots + c_{1}t^{1} + c_{0} \qquad n \leq t< n + 1
+	x(t) = c_{N}t^{N} + c_{N-1}t^{N-1} + \dots + c_{1}t^{1} + c_{0} \qquad n \le t< n + 1
 \]
 
 In particular, second-order polynomial interpolation considers three successive samples surrounding the interpolated location: $x[n-1]$, $x[n]$, and $x[n+1]$. 
 
 \[
-	x(t) = c_{2}(t-n)^{2} + c_{1}(t-n) + c_{0} \qquad n < t < n + 1
+	x(t) = c_{2}(t-n)^{2} + c_{1}(t-n) + c_{0} \qquad n \le t < n + 1
 \]
 
 \[
