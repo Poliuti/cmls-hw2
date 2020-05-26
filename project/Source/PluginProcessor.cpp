@@ -129,13 +129,13 @@ float FlangerProcessor::interpolate(float dr, int delayBufLength, float* delay)
 
     // POLINOMIAL 3rd order INTERPOLATION _ x(t) = c3*(t-n)^3 + c2*(t-n)^2 + c1*(t-n) + c0
     /*
-    int pre_previousSample = (int)floorf(dr)-1 % delayBufLength;                            // x[n-1]
     int previousSample = (int)floorf(dr);                                                   // x[n]
+    int pre_previousSample = (previousSample - 1 + delayBufLength) % delayBufLength;        // x[n-1]
     int nextSample = (previousSample + 1) % delayBufLength;                                 // x[n+1]
     int next_nextSample = (previousSample + 2) % delayBufLength;                            // x[n+2]
     float c0 = delay[previousSample];
     float c1 = delay[nextSample] - delay[pre_previousSample];
-    float c2 = delay[pre_previousSample] - delay[previousSample] - 1;  //a0=???
+    float c2 = delay[pre_previousSample] - delay[previousSample] - 1;
     float c3 = -delay[pre_previousSample] + delay[previousSample] - delay[nextSample] + delay[next_nextSample];
     float frac2 = fraction * fraction;
     float frac3 = frac2 * fraction;
