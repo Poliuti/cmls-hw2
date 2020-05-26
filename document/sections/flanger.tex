@@ -70,7 +70,7 @@ With high values of feedback gain and depth, we can occur in the risk of saturat
 \[
 y[n] = \alpha \cdot \left( y[n-1] + x[n] - x[n-1] \right)
 \qquad
-0 \le \alpha \le 1
+0 < \alpha \le 1
 \]
 where $\alpha$ has the same role as the time-constant of an analog RC circuit.
 In particular, it is related to the cut-off frequency $f_c$ as:
@@ -93,8 +93,8 @@ We decided to set the range of this parameter from 0 to 99\% to remain in a stab
 \paragraph{Low Frequency Oscillators}
 As said before, each delay line is controlled by an LFO.
 We decided to set another degree of freedom for the user and we introduced some other user-adjustable parameters related to it.
-In particular \emph{sweep width} is the value of its amplitude, expressed in milliseconds, in a range from 0 to 25\,ms.
-It is also possible to modify the \emph{LFO frequency}, from 0 to 10\,Hz.
+In particular \emph{sweep width} is the value of its amplitude, expressed in milliseconds, in a range from 1 to 10\,ms.
+It is also possible to modify the \emph{LFO frequency}, from 0.1 to 10\,Hz.
 This parameter is useful to act on the speed of the read pointer.
 
 The plug-in also provides the possibility to choose the type of wave.
